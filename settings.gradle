@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'opengl-by-java'
-include('app')
+include('app', 'math')
