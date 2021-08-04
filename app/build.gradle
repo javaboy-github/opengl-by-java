@@ -37,6 +37,9 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+
+    // 自作の数学ライブラリ
+    implementation project(":math")
 }
 
 application {
