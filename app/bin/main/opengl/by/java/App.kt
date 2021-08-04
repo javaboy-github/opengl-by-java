@@ -9,17 +9,11 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryStack.stackPush
 import org.lwjgl.system.MemoryUtil.NULL
-import opengl.by.java.math.Vec3
-import opengl.by.java.math.Vec2
 
 
 object Main {
     // windowの値
     private var window: Long? = null
-
-    // 幅と高さ
-    internal val width = 1280;
-    internal val height = 960;
 
     fun run() {
         init()
@@ -40,7 +34,7 @@ object Main {
         glfwDefaultWindowHints()
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE)
-        window = glfwCreateWindow(width, height, "OpenGL by java", NULL, NULL)
+        window = glfwCreateWindow(600, 600, "OpenGL by java", NULL, NULL)
         if (window == NULL) {
             throw RuntimeException("GLFWウィンドウを作成できません")
         }
@@ -80,20 +74,13 @@ object Main {
 
     fun loop() {
         GL.createCapabilities()
-        val texturePath = System.getProperty("user.dir") + "/src/main/resources/texture.png"
-        val triangle = Triangle(texturePath,
-                                pos=Vec3(0.0, 0.0, -15.0), // 位置
-                                wh=Vec2(5.0, 5.0),// 幅と高さ
-                                rot=Vec3(30.0, 45.0, 0.0)) // 回転角度
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-        glEnable(GL_TEXTURE_2D)
+
+        glClearColor(1.0f, 0.0f, 0.0f, 0.0f)
         while (!glfwWindowShouldClose(window!!)) {
             glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-            triangle.draw()
             glfwSwapBuffers(window!!)
             glfwPollEvents()
         }
-        triangle.close()
     }
 }
 
