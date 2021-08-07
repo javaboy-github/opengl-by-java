@@ -1,7 +1,6 @@
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.31'
     id 'application'
 }
 
@@ -26,10 +25,6 @@ repositories {
 }
 
 dependencies {
-    //  kotlin
-    implementation platform('org.jetbrains.kotlin:kotlin-bom')
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-
     // LWJGL3
     implementation "org.lwjgl:lwjgl:$lwjglVersion"
     implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
@@ -38,10 +33,11 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 
-    // 自作の数学ライブラリ
-    implementation project(":math")
+
+    // 数学ライブラリ
+    implementation 'org.joml:joml:1.10.1'
 }
 
 application {
-    mainClass = 'opengl.by.java.AppKt'
+    mainClass = 'opengl.by.java.Main'
 }
