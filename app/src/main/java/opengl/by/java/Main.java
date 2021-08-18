@@ -92,9 +92,12 @@ public class Main {
     private void loop() {
         GL.createCapabilities();
         String texturePath = System.getProperty("user.dir") + "/src/main/resources/texture.png";
+        System.out.println(texturePath);
         Triangle[] triangles;
         try {
-            triangles = new Triangle[]{new Triangle(texturePath, new Vector2f(5, 5), new Vector3f(0, 0, -15), new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1, 1)};
+            triangles = new Triangle[]{
+                new Triangle(texturePath, new Vector2f(5, 5), new Vector3f(0, 0, -15), new Vector3f(30, 45, 0), new Vector3f(1, 1, 1), 1, 1)
+            };
         } catch (IOException e) {
             e.printStackTrace();
             return;
