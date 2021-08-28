@@ -23,7 +23,40 @@ public class Triangle implements AutoCloseable{
     double alp = 1.0;
     int textureId;
 
-    public Triangle(String path, Vector2f wh, Vector3f pos, Vector3f rot, Vector3f col, double scl, double apl) throws IOException{
+    /**Triangleクラスのビルダー。 */
+    public static class Builder {
+        private String path = null;
+        private Vector2f wh = new Vector2f();
+        private Vector3f pos = new Vector3f();
+        private Vector3f rot = new Vector3f();
+        private Vector3f col = new Vector3f();
+        private double scl = 1.0;
+        private double alp = 1.0;
+
+        // セッター
+        public Builder setPath(String path) {this.path = path;return this;}
+        public Builder setWh(Vector2f wh) {this.wh = wh;return this;}
+        public Builder setPos(Vector3f pos) {this.pos = pos;return this;}
+        public Builder setRot(Vector3f rot) {this.rot = rot;return this;}
+        public Builder setCol(Vector3f col) {this.col = col;return this;}
+        public Builder setScl(double scl) {this.scl = scl;return this;}
+        public Builder setAlp(double alp) {this.alp = alp;return this;}
+
+        // ゲッター
+        public String getPath() {return this.path;}
+        public Vector2f getWh() {return this.wh;}
+        public Vector3f getPos() {return this.pos;}
+        public Vector3f getRot() {return this.rot;}
+        public Vector3f getCol() {return this.col;}
+        public double getScl() {return this.scl;}
+        public double getAlp() {return this.alp;}
+
+        public Triangle build() throws IOException{
+            return new Triangle(path, wh, pos, rot, col, scl, alp);
+        }
+    }
+
+    public Triangle(String path, Vector2f wh, Vector3f pos, Vector3f rot, Vector3f col, double scl, double alp) throws IOException{
         this.path = path;
         this.wh = wh;
         this.pos = pos;
