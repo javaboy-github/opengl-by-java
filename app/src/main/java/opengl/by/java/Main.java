@@ -10,15 +10,17 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 
 
 public class Main {
@@ -102,11 +104,57 @@ public class Main {
             e.printStackTrace();
             return;
         }
+
+        // Create program
+        var program = glCreateProgram();
+        int vobj = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vobj, """
+#version 150 core
+
+in vec4 position;
+
+void main()
+{
+    gl_Position = position;
+}
+""");
+        glCompileShader(vobj);
+        glAttachShader(program, vobj);
+        glDeleteShader(vobj);
+        int fobj = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fobj, """
+#version 150 core
+
+out vec4 fragment;
+
+void main()
+{
+    fragment = vec4(1.0, 0.0, 0.0, 1.0);
+}
+        """, null);
+        glCompileShader(fobj);
+        glAttachShader(program, fobj);
+        glDeleteShader(fobj);
+        glBindAttribLocation(program, 0, "position");
+        glBindFragDataLocation(program, 0, "fragment");
+        glLinkProgram(program);
+        glUseProgram(program);
+
+        var modelViewLoc = glGetUniformLocation(program, "modelview");
+
+        var camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), new Vector3f(0, 1, 0));
+
+
         glClearColor(0, 0, 0, 0);
         glEnable(GL_TEXTURE_2D); //テクスチャ表示
         glEnable(GL_DEPTH_TEST); // 重ならない
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            float[] array = new float[16];
+            camera.viewMatrix().get(array);
+            var pointer = FloatBuffer.wrap(array, 0, array.length);
+
+            glUniformMatrix4fv(modelViewLoc, false, pointer);
             for (Triangle triangle : triangles)
                 triangle.draw();
             glfwSwapBuffers(window);
