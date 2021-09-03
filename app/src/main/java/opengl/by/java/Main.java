@@ -112,10 +112,11 @@ public class Main {
 #version 150 core
 
 in vec4 position;
+uniform mat4 modelview;
 
 void main()
 {
-    gl_Position = position;
+    gl_Position = modelview * position;
 }
 """);
         glCompileShader(vobj);
@@ -131,7 +132,7 @@ void main()
 {
     fragment = vec4(1.0, 0.0, 0.0, 1.0);
 }
-        """, null);
+        """, "");
         glCompileShader(fobj);
         glAttachShader(program, fobj);
         glDeleteShader(fobj);
