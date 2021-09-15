@@ -1,6 +1,7 @@
 package opengl.by.java;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 // 三角関数
 import static java.lang.Math.sin;
@@ -110,4 +111,29 @@ public class AffineTransformHelper {
 		}
 		return new Matrix4f(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 	} 
+
+    /** ビュー変換行列を作成する 
+     * @param e 視点の位置
+     * @param g 目標点の位置。つまり見ている方向。
+     * @param u 上方向のベクトル。つまり画面の上の部分がどれに当たるかを示す。
+     * @return 生成された行列
+    */
+    public static Matrix4f lookAt(Vector3f e, Vector3f g, Vector3f u) {
+        final var tv = translate(-e.x, -e.y, -e.z);
+        final var t = new Vector3f(e).sub(g);
+        final var r = new Vector3f(e).cross(t);
+        final var s = new Vector3f(u).cross(t);
+        s.normalize(); // 正規化
+        r.normalize();
+        t.normalize();
+
+        final var rv = new Matrix4f(
+            r.x, r.y, r.z, 0,
+            s.x, s.y, s.z, 0,
+            t.x, t.y, t.z, 0,
+            0, 0, 0, 1
+        );
+
+        return rv.mul(tv);
+    }
 }
