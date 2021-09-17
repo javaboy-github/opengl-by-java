@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import javax.swing.text.Position;
+
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -149,13 +151,29 @@ void main()
         glClearColor(0, 0, 0, 0);
         glEnable(GL_TEXTURE_2D); //テクスチャ表示
         glEnable(GL_DEPTH_TEST); // 重ならない
+
+        var pointOfView = new Vector3f(0, 0, 0);
+
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            if (glfwGetKey(window, GLFW_KEY_UP) != GLFW_RELEASE) pointOfView.y += 1;
+            if (glfwGetKey(window, GLFW_KEY_DOWN) != GLFW_RELEASE) pointOfView.y -= 1;
+
             float[] array = new float[16];
             camera.viewMatrix().get(array);
             var pointer = FloatBuffer.wrap(array, 0, array.length);
+            var modelview = AffineTransformHelper.lookAt(
+                new Vector3f(0, 0, 0),    // position
+                new Vector3f(-1, -1, -1), // target
+                new Vector3f(0, 1, 0)     // up
+            );
 
-            glUniformMatrix4fv(modelViewLoc, false, pointer);
+            System.out.println(pointOfView);
+
+            // glUniformMatrix4fv(modelViewLoc, false, pointer);
+            var data = modelview.get(new float[16]);
+            glUniformMatrix4fv(modelViewLoc, false, data);
             for (Triangle triangle : triangles)
                 triangle.draw();
             glfwSwapBuffers(window);
