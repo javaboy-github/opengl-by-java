@@ -2,28 +2,16 @@ package opengl.by.java;
 
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.system.CallbackI.S;
-
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 /** 三角形を表すクラスです。 drawメソッドで描画でき、このインスタンスを破棄する場合は必ずcloseメソッドを呼んでください。
 */
 public class Triangle implements AutoCloseable{
     /** 頂点配列オブジェクトのID */
-    private IntBuffer vao;
+    private int vao;
     /**頂点バッファオブジェクトのiD */
-    private IntBuffer vbo;
+    private int vbo;
     /**頂点バッファイブジェクトのインデックス */
-    private IntBuffer ibo;
+    private int ibo;
     /**頂点の数 */
     private int vertexCount;
 
@@ -35,16 +23,16 @@ public class Triangle implements AutoCloseable{
      * @param indexCount 頂点のインデックス数
      * @param index 頂点のインデックスを格納した配列
      */
-    public Triangle(int size, int vertexCount, int[] vertex, int indexCount, int index) {
+    public Triangle(int size, int vertexCount, float[] vertex, int indexCount, int[] index) {
         this.vertexCount = vertexCount;
 
         // 頂点配列オブジェクト
-        glGenVertexArrays(vao);
-        glBindVertexArray(vao.get());
+        vao = glGenVertexArrays();
+        glBindVertexArray(vao);
 
         // 頂点バッファオブジェクト
-        glGenBuffers(vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo.get());
+        vbo = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertex, GL_STATIC_DRAW);
 
         // 結合されている頂点バッファオブジェクトを in 変数から参照できるようにする
@@ -54,13 +42,13 @@ public class Triangle implements AutoCloseable{
         glEnableVertexAttribArray(1);
 
         // インデックスの頂点バッファオブジェクト
-        glGenBuffers(ibo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo.get());
+        ibo = glGenBuffers();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * 4, GL_STATIC_DRAW);
     }
     
     public void draw() {
-        glBindVertexArray(vao.get());
+        glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, vertexCount); // 折線で描画
     }
 
