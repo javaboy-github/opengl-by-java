@@ -11,6 +11,7 @@ import org.lwjgl.system.MemoryStack;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -56,6 +57,10 @@ public class Main {
             throw new IllegalStateException("GLFWを初期化できません");
         
         glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         window = glfwCreateWindow(width, height, "OpenGL by java", NULL, NULL);
@@ -113,7 +118,7 @@ public class Main {
             7, 6, 5, 7, 5, 4, // 右
             7, 4, 3, 7, 3, 2, // 上
             7, 2, 1, 7, 1, 6  // 前
-          };
+        };
         Triangle[] triangles = {
             new Triangle(3, 8, cubeVertex, 36, solidCubeIndex)
         };
@@ -122,7 +127,7 @@ public class Main {
         var program = glCreateProgram();
         int vobj = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vobj, """
-#version 150 core
+#version 150
 
 in vec4 position;
 uniform mat4 modelview;
@@ -133,6 +138,17 @@ void main()
 }
 """);
         glCompileShader(vobj);
+        var status = new int[1];
+        glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
+        if (status[0] == GL_FALSE){
+            var bufSize = new int[1];
+            glGetShaderiv(vobj, GL_INFO_LOG_LENGTH, bufSize);
+            if (bufSize[0] > 1) {
+                throw new RuntimeException("vertex shaderのコンパイルに失敗しました。エラーメッセージ:"
+                    + glGetShaderInfoLog(vobj, bufSize[0]));
+            }
+            else throw new RuntimeException("vertex shaderのコンパイルに失敗しました");
+        }
         glAttachShader(program, vobj);
         glDeleteShader(vobj);
         int fobj = glCreateShader(GL_FRAGMENT_SHADER);
@@ -147,6 +163,17 @@ void main()
 }
         """, "");
         glCompileShader(fobj);
+        status = new int[1];
+        glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
+        if (status[0] == GL_FALSE){
+            var bufSize = new int[1];
+            glGetShaderiv(vobj, GL_INFO_LOG_LENGTH, bufSize);
+            if (bufSize[0] > 1) {
+                throw new RuntimeException("fragment shaderのコンパイルに失敗しました。エラーメッセージ:"
+                    + glGetShaderInfoLog(vobj, bufSize[0]));
+            }
+            else throw new RuntimeException("vertex shaderのコンパイルに失敗しました");
+        }
         glAttachShader(program, fobj);
         glDeleteShader(fobj);
         glBindAttribLocation(program, 0, "position");
