@@ -124,8 +124,17 @@ public class AffineTransformHelper {
         final var r = new Vector3f(e).cross(t);
         final var s = new Vector3f(u).cross(t);
         s.normalize(); // 正規化
+		if (Double.isNaN(s.x)) s.x = 0; // NaNがあったら修正する
+		if (Double.isNaN(s.y)) s.y = 0;
+		if (Double.isNaN(s.z)) s.z = 0;
         r.normalize();
+		if (Double.isNaN(r.x)) r.x = 0;
+		if (Double.isNaN(r.y)) r.y = 0;
+		if (Double.isNaN(r.z)) r.z = 0;
         t.normalize();
+		if (Double.isNaN(t.x)) t.x = 0;
+		if (Double.isNaN(t.y)) t.y = 0;
+		if (Double.isNaN(t.z)) t.z = 0;
 
         final var rv = new Matrix4f(
             r.x, r.y, r.z, 0,
