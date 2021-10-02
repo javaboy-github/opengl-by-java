@@ -25,6 +25,9 @@ import javax.swing.text.Position;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.nio.file.Paths;
+import java.nio.file.Files;
+
 
 public class Main {
     // windowの値
@@ -126,17 +129,9 @@ public class Main {
         // Create program
         var program = glCreateProgram();
         int vobj = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vobj, """
-#version 150
-
-in vec4 position;
-uniform mat4 modelview;
-
-void main()
-{
-    gl_Position = modelview * position;
-}
-""");
+        var vertexShaderSourceFile = Paths.get("main.vert");
+        String vertexShaderSource = Files.readString(vertexShaderSourceFile);
+        glShaderSource(vobj, vertexShaderSource, "");
         glCompileShader(vobj);
         var status = new int[1];
         glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
@@ -152,16 +147,9 @@ void main()
         glAttachShader(program, vobj);
         glDeleteShader(vobj);
         int fobj = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fobj, """
-#version 150 core
-
-out vec4 fragment;
-
-void main()
-{
-    fragment = vec4(1.0, 0.0, 0.0, 1.0);
-}
-        """, "");
+        var fragmentShaderSourceFile = Paths.get("main.frag");
+        String fragmentShaderSource = Files.readString(fragmentShaderSourceFile);
+        glShaderSource(fobj, fragmentShaderSource, "");
         glCompileShader(fobj);
         status = new int[1];
         glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
