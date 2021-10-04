@@ -130,7 +130,13 @@ public class Main {
         var program = glCreateProgram();
         int vobj = glCreateShader(GL_VERTEX_SHADER);
         var vertexShaderSourceFile = Paths.get("main.vert");
-        String vertexShaderSource = Files.readString(vertexShaderSourceFile);
+        String vertexShaderSource = null;
+        try {
+            vertexShaderSource = Files.readString(vertexShaderSourceFile);
+        } catch(IOException e) {
+            System.err.println("Failed to load main.vert.");
+            System.exit(1);
+        }
         glShaderSource(vobj, vertexShaderSource, "");
         glCompileShader(vobj);
         var status = new int[1];
@@ -148,7 +154,13 @@ public class Main {
         glDeleteShader(vobj);
         int fobj = glCreateShader(GL_FRAGMENT_SHADER);
         var fragmentShaderSourceFile = Paths.get("main.frag");
-        String fragmentShaderSource = Files.readString(fragmentShaderSourceFile);
+        String fragmentShaderSource = null;
+        try {
+            fragmentShaderSource = Files.readString(fragmentShaderSourceFile);
+        } catch(IOException e) {
+            System.err.println("Failed to load main.frag.");
+            System.exit(1);
+        }
         glShaderSource(fobj, fragmentShaderSource, "");
         glCompileShader(fobj);
         status = new int[1];
