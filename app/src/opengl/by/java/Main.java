@@ -25,6 +25,9 @@ import javax.swing.text.Position;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.nio.file.Paths;
+import java.nio.file.Files;
+
 
 public class Main {
     // windowの値
@@ -126,17 +129,15 @@ public class Main {
         // Create program
         var program = glCreateProgram();
         int vobj = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vobj, """
-#version 150
-
-in vec4 position;
-uniform mat4 modelview;
-
-void main()
-{
-    gl_Position = modelview * position;
-}
-""");
+        var vertexShaderSourceFile = Paths.get("main.vert");
+        String vertexShaderSource = null;
+        try {
+            vertexShaderSource = Files.readString(vertexShaderSourceFile);
+        } catch(IOException e) {
+            System.err.println("Failed to load main.vert.");
+            System.exit(1);
+        }
+        glShaderSource(vobj, vertexShaderSource, "");
         glCompileShader(vobj);
         var status = new int[1];
         glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
@@ -152,6 +153,7 @@ void main()
         glAttachShader(program, vobj);
         glDeleteShader(vobj);
         int fobj = glCreateShader(GL_FRAGMENT_SHADER);
+<<<<<<< HEAD
         glShaderSource(fobj, """
 #version 150 core
 
@@ -164,6 +166,17 @@ void main()
     fragment = vec4(sin(t), cos(t), 0.0, 1.0);
 }
         """, "");
+=======
+        var fragmentShaderSourceFile = Paths.get("main.frag");
+        String fragmentShaderSource = null;
+        try {
+            fragmentShaderSource = Files.readString(fragmentShaderSourceFile);
+        } catch(IOException e) {
+            System.err.println("Failed to load main.frag.");
+            System.exit(1);
+        }
+        glShaderSource(fobj, fragmentShaderSource, "");
+>>>>>>> 907011629daf801e0343ed9a18c9d6d7195714d7
         glCompileShader(fobj);
         status = new int[1];
         glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
