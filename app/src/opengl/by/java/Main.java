@@ -156,10 +156,12 @@ void main()
 #version 150 core
 
 out vec4 fragment;
+uniform float t;
 
 void main()
 {
-    fragment = vec4(1.0, 0.0, 0.0, 1.0);
+    // fragment = vec4(0.3, 0.3, 0.3, 1.0);
+    fragment = vec4(sin(t), cos(t), 0.0, 1.0);
 }
         """, "");
         glCompileShader(fobj);
@@ -182,9 +184,7 @@ void main()
         glUseProgram(program);
 
         var modelViewLoc = glGetUniformLocation(program, "modelview");
-
-        var camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1), new Vector3f(0, 1, 0));
-
+        var tLoc = glGetUniformLocation(program, "t");
 
         glClearColor(0, 0, 0, 0);
         glEnable(GL_TEXTURE_2D); //テクスチャ表示
@@ -192,28 +192,36 @@ void main()
 
         var pointOfView = new Vector3f(0, 0, 0);
 
+        float t = 0;
+
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            if (glfwGetKey(window, GLFW_KEY_UP) != GLFW_RELEASE) pointOfView.y += 1;
-            if (glfwGetKey(window, GLFW_KEY_DOWN) != GLFW_RELEASE) pointOfView.y -= 1;
+            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) pointOfView.y += 0.01;
+            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) pointOfView.y -= 0.01;
+            if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) pointOfView.x += 0.01;
+            if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) pointOfView.x -= 0.01;
+            if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView.z += 0.01;
+            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) pointOfView.z -= 0.01;
 
             float[] array = new float[16];
-            camera.viewMatrix().get(array);
             var pointer = FloatBuffer.wrap(array, 0, array.length);
             var modelview = AffineTransformHelper.lookAt(
-                new Vector3f(0, 0, 0),    // position
-                new Vector3f(-1, -1, -1), // target
+                pointOfView,
+                // new Vector3f(-1, -1, -1), // target
+                new Vector3f(pointOfView).add(-1, -1, -1),
                 new Vector3f(0, 1, 0)     // up
             );
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
             var data = modelview.get(new float[16]);
-            glUniformMatrix4fv(modelViewLoc, false, data);
+            glUniformMatrix4fv(modelViewLoc, true, data);
+            glUniform1f(tLoc, (float) t);
             for (Triangle triangle : triangles)
                 triangle.draw();
             glfwSwapBuffers(window);
             glfwPollEvents();
+            t+=0.1;
         }
         for (Triangle triangle : triangles)
             triangle.close();

@@ -49,7 +49,7 @@ public class Triangle implements AutoCloseable{
     
     public void draw() {
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount); // 折線で描画
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount); // 折線で描画
     }
 
     // 事実上のデストラクタ
