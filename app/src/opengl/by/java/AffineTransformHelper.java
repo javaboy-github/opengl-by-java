@@ -138,5 +138,25 @@ public class AffineTransformHelper {
 
 
         return rv.mul(tv);
-    }
+	}
+	
+	/**透視投影変換行列を作成する。
+	  * @param left　視錐台の最も手前の面の左側の部分のx座標。rightとの順序は問わない。
+	  * @param right　視錐台最も手前の面の右側の部分のx座標。leftとの順序は問わない。
+	  * @param bottom 視錐台の最も手前の面の下側の部分のy座標。topとの順序は問わない
+	  * @param top 視錐台の最も手前の面の上側の部分のy座標。bottomとの順序は問わない。。
+	  * @param near 表示する範囲(視錐台)で最も手前のもの
+	  * @param far 表示する範囲(視錐台)で最も奥のもの
+	  * @return 変換行列
+	  */
+	public static Matrix4f frustum(float left, float right, float bottom, float top, float near, float far) {
+		if (right - left == 0 || bottom - top == 0 || far - near == 0)
+			return new Matrix4f(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); // 単位行列
+		return new Matrix4f(
+			2 * near / (right - left), 0, (right + left) / (right - left), 0,
+			0, 2 * near / (top - bottom), (top + bottom) / (top - bottom), 0,
+			0, 0, -(far + near) / (far - near), -(2 * far * near) / (far - near),
+			0, 0, -1, 0
+		);
+	}
 }
