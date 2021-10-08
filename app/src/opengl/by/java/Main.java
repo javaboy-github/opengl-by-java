@@ -182,6 +182,7 @@ public class Main {
         glUseProgram(program);
 
         var modelViewLoc = glGetUniformLocation(program, "modelview");
+        var projectionLoc = glGetUniformLocation(program, "projection");
         var tLoc = glGetUniformLocation(program, "t");
 
         glClearColor(0, 0, 0, 0);
@@ -202,8 +203,6 @@ public class Main {
             if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView.z += 0.01;
             if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) pointOfView.z -= 0.01;
 
-            float[] array = new float[16];
-            var pointer = FloatBuffer.wrap(array, 0, array.length);
             var modelview = AffineTransformHelper.lookAt(
                 pointOfView,
                 // new Vector3f(-1, -1, -1), // target
@@ -212,8 +211,10 @@ public class Main {
             );
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
-            var data = modelview.get(new float[16]);
-            glUniformMatrix4fv(modelViewLoc, true, data);
+            glUniformMatrix4fv(modelViewLoc, true, modelview.get(new float[16]));
+            var projection = AffineTransformHelper.frustum(-width / 2f, width / 2f, -height / 2f, height / 2f, 1f, 10f);
+            System.out.println(projection);
+            glUniformMatrix4fv(projectionLoc, true, projection.get(new float[16]));
             glUniform1f(tLoc, (float) t);
             for (Triangle triangle : triangles)
                 triangle.draw();
