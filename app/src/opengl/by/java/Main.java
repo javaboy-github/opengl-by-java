@@ -34,8 +34,8 @@ public class Main {
     private long window;
 
     // 幅と高さ
-    static final int width = 1280;
-    static final int height = 960;
+    int width = 1280;
+    int height = 960;
 
     public static void main(String[] args) {
         final Main main = new Main();
@@ -212,8 +212,7 @@ public class Main {
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
             glUniformMatrix4fv(modelViewLoc, true, modelview.get(new float[16]));
-            var projection = AffineTransformHelper.frustum(-width / 2f, width / 2f, -height / 2f, height / 2f, 1f, 10f);
-            System.out.println(projection);
+            var projection = AffineTransformHelper.frustum(1f, width / height, 1f, 10f);
             glUniformMatrix4fv(projectionLoc, true, projection.get(new float[16]));
             glUniform1f(tLoc, (float) t);
             for (Triangle triangle : triangles)
