@@ -28,8 +28,8 @@ public class Vec3 {
 
 	public Vec3 normalize() {
 		final var norm = (float)Math.sqrt(x + y + z);
-		if (norm === 1) return this;
-		if (norm === 0) throw new ArithmeticException("normalize by [0,0,0]");
+		if (norm == 1) return this;
+		if (norm == 0) throw new ArithmeticException("normalize by [0,0,0]");
 		return new Vec3(
 			x / norm,
 			y / norm,
