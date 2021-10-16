@@ -22,9 +22,6 @@ import java.nio.IntBuffer;
 
 import javax.swing.text.Position;
 
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-
 import java.nio.file.Paths;
 import java.nio.file.Files;
 
@@ -189,31 +186,35 @@ public class Main {
         glEnable(GL_TEXTURE_2D); //テクスチャ表示
         glEnable(GL_DEPTH_TEST); // 重ならない
 
-        var pointOfView = new Vector3f(0, 0, 0);
+        var pointOfView = new Vec3(0, 0, 0);
 
         float t = 0;
+
+		final var foward = new Vec3(0.01f, 0, 0);
+		final var up = new Vec3(0, 0.01f, 0);
+		final var right = new Vec3(0, 0, 0.01f);
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) pointOfView.y += 0.01;
-            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) pointOfView.y -= 0.01;
-            if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) pointOfView.x += 0.01;
-            if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) pointOfView.x -= 0.01;
-            if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView.z += 0.01;
-            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) pointOfView.z -= 0.01;
+            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) pointOfView = pointOfView.plus(up);
+            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) pointOfView = pointOfView.minus(up);
+            if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) pointOfView = pointOfView.plus(foward);
+            if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) pointOfView = pointOfView.minus(foward);
+            if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView = pointOfView.plus(right);
+            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) pointOfView = pointOfView.minus(right);
 
             var modelview = AffineTransformHelper.lookAt(
                 pointOfView,
-                // new Vector3f(-1, -1, -1), // target
-                new Vector3f(pointOfView).add(-1, -1, -1),
-                new Vector3f(0, 1, 0)     // up
+                // new Vec3(-1, -1, -1), // target
+                pointOfView.plus(new Vec3(-1, -1, -1)),
+                new Vec3(0, 1, 0)     // up
             );
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
-            glUniformMatrix4fv(modelViewLoc, true, modelview.get(new float[16]));
+            glUniformMatrix4fv(modelViewLoc, true, modelview.toArray());
             var projection = AffineTransformHelper.frustum(1f, width / height, 1f, 10f);
-            glUniformMatrix4fv(projectionLoc, true, projection.get(new float[16]));
+            glUniformMatrix4fv(projectionLoc, true, projection.toArray());
             glUniform1f(tLoc, (float) t);
             for (Triangle triangle : triangles)
                 triangle.draw();

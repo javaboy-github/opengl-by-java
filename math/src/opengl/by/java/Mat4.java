@@ -31,8 +31,58 @@ public class Mat4 {
     this.m44 = m44;
   }
 
+  public Mat4 plus(Mat4 target) {
+    return new Mat4(
+      m11 + target.m11, m12 + target.m12, m13 + target.m13, m14 + target.m14, 
+      m21 + target.m21, m22 + target.m22, m23 + target.m23, m24 + target.m24, 
+      m31 + target.m31, m32 + target.m32, m33 + target.m33, m34 + target.m34, 
+      m41 + target.m41, m42 + target.m42, m43 + target.m43, m44 + target.m44 
+    );
+  }
+
+  
+  public Mat4 minus(Mat4 target) {
+    return new Mat4(
+      m11 - target.m11, m12 - target.m12, m13 - target.m13, m14 - target.m14, 
+      m21 - target.m21, m22 - target.m22, m23 - target.m23, m24 - target.m24, 
+      m31 - target.m31, m32 - target.m32, m33 - target.m33, m34 - target.m34, 
+      m41 - target.m41, m42 - target.m42, m43 - target.m43, m44 - target.m44
+    );
+  }
+
+  public Mat4 mul(Mat4 target) {
+    var m = target;
+    return new Mat4(
+      m11 * m.m11 + m12 * m.m21 + m13 * m.m31 + m14 * m.m41,
+      m11 * m.m12 + m12 * m.m22 + m13 * m.m32 + m14 * m.m42,
+      m11 * m.m13 + m12 * m.m23 + m13 * m.m33 + m14 * m.m43,
+      m11 * m.m14 + m12 * m.m24 + m13 * m.m34 + m14 * m.m44,
+      m21 * m.m11 + m22 * m.m21 + m23 * m.m31 + m24 * m.m41,
+      m21 * m.m12 + m22 * m.m22 + m23 * m.m32 + m24 * m.m42,
+      m21 * m.m13 + m22 * m.m23 + m23 * m.m33 + m24 * m.m43,
+      m21 * m.m14 + m22 * m.m24 + m23 * m.m34 + m24 * m.m44,
+      m31 * m.m11 + m32 * m.m21 + m33 * m.m31 + m34 * m.m41,
+      m31 * m.m12 + m32 * m.m22 + m33 * m.m32 + m34 * m.m42,
+      m31 * m.m13 + m32 * m.m23 + m33 * m.m33 + m34 * m.m43,
+      m31 * m.m14 + m32 * m.m24 + m33 * m.m34 + m34 * m.m44,
+      m41 * m.m11 + m42 * m.m21 + m43 * m.m31 + m44 * m.m41,
+      m41 * m.m12 + m42 * m.m22 + m43 * m.m32 + m44 * m.m42,
+      m41 * m.m13 + m42 * m.m23 + m43 * m.m33 + m44 * m.m43,
+      m41 * m.m14 + m42 * m.m24 + m43 * m.m34 + m44 * m.m44
+    );
+  }
+
   @Override
   public String toString() {
 	return String.format("[%d,%d,%d,%d\n%d,%d,%d,%d\n%d,%d,%d,%d\n%d,%d,%d,%d\n]", m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
+  }
+
+  public float[] toArray() {
+    return new float[]{
+      m11, m12, m13, m14,
+      m21, m22, m23, m24,
+      m31, m32, m33, m34,
+      m41, m42, m43, m44
+	} ;
   }
 }
