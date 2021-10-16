@@ -54,7 +54,7 @@ public class Vec3 {
 	}
 
 	public float length() {
-		return (float)Math.sqrt(x + y + z);
+		return (float)Math.sqrt((x + y + z) / 3);
 	}
 
 	@Override

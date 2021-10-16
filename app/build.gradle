@@ -34,6 +34,7 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 
 
+    implementation project(':math')
     // 数学ライブラリ
     implementation 'org.joml:joml:1.10.1'
 }

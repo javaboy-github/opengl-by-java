@@ -1,8 +1,5 @@
 package opengl.by.java;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-
 // 三角関数
 import static java.lang.Math.sin;
 import static java.lang.Math.cos;
@@ -21,8 +18,8 @@ public class AffineTransformHelper {
 	 * @param z 移動するzの量
 	 * @return 生成された行列
 	 */
-	public static Matrix4f translate(float x, float y, float z) {
-		return new Matrix4f(
+	public static Mat4 translate(float x, float y, float z) {
+		return new Mat4(
 			1, 0, 0, x,
 			0, 1, 0, y,
 			0, 0, 1, z,
@@ -36,8 +33,8 @@ public class AffineTransformHelper {
 	 * @param z 拡大/縮小するzの量
 	 * @return 生成された行列
 	 */
-	public static Matrix4f scale(float x, float y, float z) {
-		return new Matrix4f(
+	public static Mat4 scale(float x, float y, float z) {
+		return new Mat4(
 			x, 0, 0, 0,
 			0, y, 0, 0,
 			0, 0, z, 0,
@@ -49,8 +46,8 @@ public class AffineTransformHelper {
 	 * @param r 回転する量。ラジアン値を入れてください。
 	 * @return 生成された行列
 	 */
-	public static Matrix4f rotateByXAxis(double r) {
-		return new Matrix4f(
+	public static Mat4 rotateByXAxis(double r) {
+		return new Mat4(
 			1, 0, 0, 0,
 			0, (float) cos(r), (float) -sin(r), 0,
 			0, (float) sin(r), (float) cos(r), 0,
@@ -62,8 +59,8 @@ public class AffineTransformHelper {
 	 * @param r 回転する量。ラジアン値を入れてください。
 	 * @return 生成された行列
 	 */
-	public static Matrix4f rotateByYAxis(double r) {
-		return new Matrix4f(
+	public static Mat4 rotateByYAxis(double r) {
+		return new Mat4(
 			(float) cos(r), 0, (float) sin(r), 0,
 			0, 1, 0, 0,
 			(float) -sin(r), 0, (float) cos(r), 0,
@@ -75,8 +72,8 @@ public class AffineTransformHelper {
 	 * @param r 回転する量。ラジアン値を入れてください。
 	 * @return 生成された行列
 	 */
-	public static Matrix4f rotateByZAxis(double r) {
-		return new Matrix4f(
+	public static Mat4 rotateByZAxis(double r) {
+		return new Mat4(
 			(float) cos(r), (float) -sin(r), 0, 0, 
 			(float) sin(r), (float) cos(r), 0, 0,
 			0, 0, 1, 0,
@@ -89,7 +86,7 @@ public class AffineTransformHelper {
 	 * @param y 軸にする行列のy座標
 	 * @param z 軸にする行列のz座標
 	 * @return 生成された行列 */
-	public static Matrix4f rotate(float x, float y, float z, float r) {
+	public static Mat4 rotate(float x, float y, float z, float r) {
 		final float d = (float) sqrt(x * x + y * y + z * z);
 		if (0.0 < d) {
 			final float l = x / d;
@@ -105,14 +102,14 @@ public class AffineTransformHelper {
 			final float c1 = 1.0f - c;
 			final float s = (float) sin(r);
 
-			return new Matrix4f(
+			return new Mat4(
 							(1.0f - l2) * c + l2, lm * c1 + n * s,			nl * c1 - m * 2,			0,
 							lm * c1 - n * s,			(1.0f - m2) * c + m2, mn * c1 + l * s,			0,
 							nl * c1 + m * s,			mn * c1 - l * 2,			(1.0f- n2) * c + n2, 0,
 							0,										0,										0,										1
 			);
 		}
-		return new Matrix4f(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+		return new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 	} 
 
     /** ビュー変換行列を作成する 
@@ -121,16 +118,16 @@ public class AffineTransformHelper {
      * @param u 上方向のベクトル。つまり画面の上の部分がどれに当たるかを示す。
      * @return 生成された行列
     */
-    public static Matrix4f lookAt(Vector3f e, Vector3f g, Vector3f u) {
-        final var tv = translate(-e.x, -e.y, -e.z);
-        final var t = new Vector3f(e).sub(g);
-        final var r = new Vector3f(u).cross(t);
-        final var s = new Vector3f(t).cross(r);
-        s.normalize(); // 正規化
-        r.normalize();
-        t.normalize();
+    public static Mat4 lookAt(Vec3 e, Vec3 g, Vec3 u) {
+        var tv = translate(-e.x, -e.y, -e.z);
+        var t = e.minus(g);
+        var r = u.cross(t);
+        var s = t.cross(r);
+        s = s.normalize(); // 正規化
+		r = r.normalize();
+        t = t.normalize();
 
-        final var rv = new Matrix4f(
+        final var rv = new Mat4(
             r.x, r.y, r.z, 0,
             s.x, s.y, s.z, 0,
             t.x, t.y, t.z, 0,
@@ -148,11 +145,11 @@ public class AffineTransformHelper {
 	  * @param far 表示する範囲(視錐台)で最も奥のもの
 	  * @return 変換行列
 	  */
-	public static Matrix4f frustum(float fovy, float aspect, float near, float far) {
+	public static Mat4 frustum(float fovy, float aspect, float near, float far) {
 		
 		if (near == far)
-			return new Matrix4f(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); // 単位行列
-		return new Matrix4f(
+			return new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); // 単位行列
+		return new Mat4(
 			aspect * (float) tan(fovy / 2), 0, 0, 0,
 			0, (float) tan(fovy / 2), 0, 0,
 			0, 0, -(far + near) / (far - near), -2 * far * near / (far - near),
