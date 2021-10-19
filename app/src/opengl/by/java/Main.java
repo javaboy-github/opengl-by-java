@@ -42,7 +42,10 @@ public class Main {
     private void run() {
         init();
         loop();
+        terminate();
+    }
 
+    private void terminate() {
         // 後始末
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
@@ -109,7 +112,7 @@ public class Main {
            1.0f,  1.0f, -1.0f,  0.8f,  0.0f,  0.0f,  // (4)
            1.0f, -1.0f, -1.0f,  0.8f,  0.0f,  0.8f,  // (5)
            1.0f, -1.0f,  1.0f,  0.8f,  0.8f,  0.0f,  // (6)
-           1.0f,  1.0f,  1.0f,  0.8f,  0.8f,  0.8f    // (7)
+           1.0f,  1.0f,  1.0f,  0.8f,  0.8f,  0.8f   // (7)
         };
         int[] solidCubeIndex = {
             0, 1, 2, 0, 2, 3, // 左
