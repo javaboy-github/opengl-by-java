@@ -1,12 +1,32 @@
 package opengl.by.java;
 
+/**4x4の行列を表す。 */
 public class Mat4 {
+  /**行列の成分 */
   public final float 
     m11, m12, m13, m14,
-	m21, m22, m23, m24,
-	m31, m32, m33, m34,
-	m41, m42, m43, m44;
+  	m21, m22, m23, m24,
+  	m31, m32, m33, m34,
+  	m41, m42, m43, m44;
 
+  /**インスタンス化する。
+    @param m11 成分
+    @param m12 成分
+    @param m13 成分
+    @param m14 成分
+    @param m11 成分
+    @param m22 成分
+    @param m23 成分
+    @param m24 成分
+    @param m31 成分
+    @param m32 成分
+    @param m33 成分
+    @param m34 成分
+    @param m41 成分
+    @param m42 成分
+    @param m43 成分
+    @param m44 成分
+  */
   public Mat4(
       float m11, float m12, float m13, float m14,
       float m21, float m22, float m23, float m24,
@@ -31,6 +51,10 @@ public class Mat4 {
     this.m44 = m44;
   }
 
+  /**この行列に行列を足して、結果を返す。
+    @param target 足す行列
+    @return 結果
+  */
   public Mat4 plus(Mat4 target) {
     return new Mat4(
       m11 + target.m11, m12 + target.m12, m13 + target.m13, m14 + target.m14, 
@@ -40,7 +64,10 @@ public class Mat4 {
     );
   }
 
-  
+  /**この行列に行列を引いて、結果を返す。
+    @param target 引く行列
+    @return 結果
+  */
   public Mat4 minus(Mat4 target) {
     return new Mat4(
       m11 - target.m11, m12 - target.m12, m13 - target.m13, m14 - target.m14, 
@@ -50,6 +77,10 @@ public class Mat4 {
     );
   }
 
+  /**この行列に行列を掛けて、結果を返す。
+    @param target 掛ける行列
+    @return 結果
+  */
   public Mat4 mul(Mat4 target) {
     var m = target;
     return new Mat4(
@@ -72,17 +103,21 @@ public class Mat4 {
     );
   }
 
+  /** @inheritDoc */
   @Override
   public String toString() {
 	return String.format("[%d,%d,%d,%d\n%d,%d,%d,%d\n%d,%d,%d,%d\n%d,%d,%d,%d\n]", m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
   }
 
+  /**行列を配列に変換する。 
+    @return 変換した配列
+  */
   public float[] toArray() {
     return new float[]{
       m11, m12, m13, m14,
       m21, m22, m23, m24,
       m31, m32, m33, m34,
       m41, m42, m43, m44
-	} ;
+	  } ;
   }
 }
