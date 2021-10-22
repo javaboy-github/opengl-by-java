@@ -5,7 +5,7 @@ public class Vec3 {
 	/**要素 */
 	public final float x, y, z;
 	/**0ベクトル */
-	public final Vec3 ZERO = new Vec3(0, 0, 0);
+	public static final Vec3 ZERO = new Vec3(0, 0, 0);
 
 	/**コンストラクタ。
 	@param x 1つめの要素
@@ -77,7 +77,7 @@ public class Vec3 {
 	/**ベクトルの長さを求める.
 	@return ベクトルの長さ */
 	public float length() {
-		return (float)Math.sqrt((x + y + z) / 3);
+		return (float)Math.sqrt(x * x + y * y + z * z);
 	}
 
 	/**@inheritDoc */
