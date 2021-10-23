@@ -14,6 +14,8 @@ public class Triangle implements AutoCloseable{
     private int ibo;
     /**頂点の数 */
     private int vertexCount;
+    /**頂点のインデックス数 */
+    private int indexCount;
 
     /**
      * Triangleクラスを作成する。
@@ -25,6 +27,7 @@ public class Triangle implements AutoCloseable{
      */
     public Triangle(int size, int vertexCount, float[] vertex, int indexCount, int[] index) {
         this.vertexCount = vertexCount;
+        this.indexCount = indexCount;
 
         // 頂点配列オブジェクト
         vao = glGenVertexArrays();
@@ -36,20 +39,23 @@ public class Triangle implements AutoCloseable{
         glBufferData(GL_ARRAY_BUFFER, vertex, GL_STATIC_DRAW);
 
         // 結合されている頂点バッファオブジェクトを in 変数から参照できるようにする
-        glVertexAttribPointer(0, size, GL_FLOAT, false, 4 * 6, 0);
+        final int vertexSize = 24;
+        glVertexAttribPointer(0, size, GL_FLOAT, false, vertexSize, 0);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 4 * 6, (char)0 + 4 * 3);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, vertexSize, (char)0 + 2 * 4);
         glEnableVertexAttribArray(1);
 
         // インデックスの頂点バッファオブジェクト
         ibo = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * 4, GL_STATIC_DRAW);
+        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * 4, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, index, GL_STATIC_DRAW);
     }
     
     public void draw() {
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount); // 折線で描画
+        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+        // glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount); // 折線で描画
     }
 
     // 事実上のデストラクタ

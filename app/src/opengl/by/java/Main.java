@@ -105,14 +105,14 @@ public class Main {
     private void loop() {
         GL.createCapabilities();
         float[] cubeVertex = {
-          -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  // (0)
-          -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  0.8f,  // (1)
-          -1.0f,  1.0f,  1.0f,  0.0f,  0.8f,  0.0f,  // (2)
-          -1.0f,  1.0f, -1.0f,  0.0f,  0.8f,  0.8f,  // (3)
-           1.0f,  1.0f, -1.0f,  0.8f,  0.0f,  0.0f,  // (4)
-           1.0f, -1.0f, -1.0f,  0.8f,  0.0f,  0.8f,  // (5)
-           1.0f, -1.0f,  1.0f,  0.8f,  0.8f,  0.0f,  // (6)
-           1.0f,  1.0f,  1.0f,  0.8f,  0.8f,  0.8f   // (7)
+          -1f, -1f, -1f,  0f,    0f,   0f,  // (0)
+          -1f, -1f,  1f,  0f,    0f,   0.8f,  // (1)
+          -1f,  1f,  1f,  0f,    0.8f, 0f,  // (2)
+          -1f,  1f, -1f,  0f,    0.8f, 0.8f,  // (3)
+           1f,  1f, -1f,  0.8f,  0f,   0f,  // (4)
+           1f, -1f, -1f,  0.8f,  0f,   0.8f,  // (5)
+           1f, -1f,  1f,  0.8f,  0.8f, 0f,  // (6)
+           1f,  1f,  1f,  0.8f,  0.8f, 0.8f   // (7)
         };
         int[] solidCubeIndex = {
             0, 1, 2, 0, 2, 3, // 左
@@ -189,7 +189,7 @@ public class Main {
         glEnable(GL_TEXTURE_2D); //テクスチャ表示
         glEnable(GL_DEPTH_TEST); // 重ならない
 
-        var pointOfView = new Vec3(0, 0, 0);
+        var pointOfView = new Vec3(3, 4, 5);
 
         float t = 0;
 
@@ -200,17 +200,17 @@ public class Main {
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) pointOfView = pointOfView.plus(up);
-            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) pointOfView = pointOfView.minus(up);
+            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) pointOfView = pointOfView.plus(right);
+            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) pointOfView = pointOfView.minus(right);
             if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) pointOfView = pointOfView.plus(foward);
             if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) pointOfView = pointOfView.minus(foward);
-            if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView = pointOfView.plus(right);
-            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) pointOfView = pointOfView.minus(right);
+            if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView = pointOfView.plus(up);
+            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) pointOfView = pointOfView.minus(up);
 
             var modelview = AffineTransformHelper.lookAt(
                 pointOfView,
                 // new Vec3(-1, -1, -1), // target
-                pointOfView.plus(new Vec3(-1, -1, -1)),
+                pointOfView.plus(new Vec3(-3, -4, -5)),
                 new Vec3(0, 1, 0)     // up
             );
 
