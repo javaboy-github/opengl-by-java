@@ -30,10 +30,6 @@ public class Main {
     // windowの値
     private long window;
 
-    // 幅と高さ
-    int width = 1280;
-    int height = 960;
-
     public static void main(String[] args) {
         final Main main = new Main();
         main.run();
@@ -66,6 +62,8 @@ public class Main {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        var width = 1260;
+        var height = 960;
         window = glfwCreateWindow(width, height, "OpenGL by java", NULL, NULL);
         if (window == NULL) {
             throw new RuntimeException("GLFWウィンドウを作成できません");
@@ -177,6 +175,7 @@ public class Main {
         glAttachShader(program, fobj);
         glDeleteShader(fobj);
         glBindAttribLocation(program, 0, "position");
+        glBindAttribLocation(program, 1, "color");
         glBindFragDataLocation(program, 0, "fragment");
         glLinkProgram(program);
         glUseProgram(program);
@@ -185,9 +184,19 @@ public class Main {
         var projectionLoc = glGetUniformLocation(program, "projection");
         var tLoc = glGetUniformLocation(program, "t");
 
-        glClearColor(0, 0, 0, 0);
+        glClearColor(1, 1, 1, 0);
         glEnable(GL_TEXTURE_2D); //テクスチャ表示
         glEnable(GL_DEPTH_TEST); // 重ならない
+
+        // veiwport
+        var size = new int[]{1260, 960}; // size[0] is width and size[1] is height
+        glfwSetWindowSizeCallback(window, (window, width, height) -> {
+            glViewport(0, 0, width, height);
+            size[0] = width * 2;
+            size[1] = height * 2;
+            System.out.println("setted");
+        });
+        glViewport(0, 0, size[0], size[1]);
 
         var pointOfView = new Vec3(3, 4, 5);
 
@@ -207,12 +216,17 @@ public class Main {
             if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView = pointOfView.plus(up);
             if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) pointOfView = pointOfView.minus(up);
 
-            var modelview = AffineTransformHelper.lookAt(
+            var width = size[0];
+            var height = size[1];
+            // var model = AffineTransformHelper.scale(1 / width, 1 / height, 1);
+            var view = AffineTransformHelper.lookAt(
                 pointOfView,
                 // new Vec3(-1, -1, -1), // target
                 pointOfView.plus(new Vec3(-3, -4, -5)),
                 new Vec3(0, 1, 0)     // up
             );
+            // var modelview = model.mul(view);
+            var modelview = view;
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
             glUniformMatrix4fv(modelViewLoc, true, modelview.toArray());
