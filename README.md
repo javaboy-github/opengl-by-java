@@ -7,7 +7,7 @@
 7. そうだ！一番得意なJavaでやろう(今ココ)
 
 みたいな感じでこのリポジトリを作りました。
-なお、レポジトリの名前に`java`と入っていますが、半分嘘です。nullに配慮したいのでkotlinで書きます。
+~~なお、レポジトリの名前に`java`と入っていますが、半分嘘です。nullに配慮したいのでkotlinで書きます。~~lwjglとうまく動作させるためにはnullのパワーが必要で、kotlinだと面倒だったのでjavaに戻しました。
 # Run
 ## Step 1
 Javaをインストールしてください。
@@ -31,5 +31,5 @@ gradleというツール(rustでいうcargo、jsでいうnpmみたいに依存�
 ```
 ### windows
 ```
-gradlew.bat
+gradlew.bat run
 ```
