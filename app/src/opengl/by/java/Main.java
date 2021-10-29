@@ -102,26 +102,9 @@ public class Main {
 
     private void loop() {
         GL.createCapabilities();
-        float[] cubeVertex = {
-          -1f, -1f, -1f,  0f,    0f,   0f,  // (0)
-          -1f, -1f,  1f,  0f,    0f,   0.8f,  // (1)
-          -1f,  1f,  1f,  0f,    0.8f, 0f,  // (2)
-          -1f,  1f, -1f,  0f,    0.8f, 0.8f,  // (3)
-           1f,  1f, -1f,  0.8f,  0f,   0f,  // (4)
-           1f, -1f, -1f,  0.8f,  0f,   0.8f,  // (5)
-           1f, -1f,  1f,  0.8f,  0.8f, 0f,  // (6)
-           1f,  1f,  1f,  0.8f,  0.8f, 0.8f   // (7)
-        };
-        int[] solidCubeIndex = {
-            0, 1, 2, 0, 2, 3, // 左
-            0, 3, 4, 0, 4, 5, // 裏
-            0, 5, 6, 0, 6, 1, // 下
-            7, 6, 5, 7, 5, 4, // 右
-            7, 4, 3, 7, 3, 2, // 上
-            7, 2, 1, 7, 1, 6  // 前
-        };
-        Triangle[] triangles = {
-            new Triangle(3, 8, cubeVertex, 36, solidCubeIndex)
+        
+        Box[] boxes = {
+            new Box(new Vec3(0, 0, 0))
         };
 
         // Create program
@@ -192,9 +175,8 @@ public class Main {
         var size = new int[]{1260, 960}; // size[0] is width and size[1] is height
         glfwSetWindowSizeCallback(window, (window, width, height) -> {
             glViewport(0, 0, width, height);
-            size[0] = width * 2;
-            size[1] = height * 2;
-            System.out.println("setted");
+            size[0] = width * 4;
+            size[1] = height * 4;
         });
         glViewport(0, 0, size[0], size[1]);
 
@@ -218,7 +200,7 @@ public class Main {
 
             var width = size[0];
             var height = size[1];
-            // var model = AffineTransformHelper.scale(1 / width, 1 / height, 1);
+            var model = AffineTransformHelper.scale(1 / width, 1 / height, 1);
             var view = AffineTransformHelper.lookAt(
                 pointOfView,
                 // new Vec3(-1, -1, -1), // target
@@ -233,13 +215,13 @@ public class Main {
             var projection = AffineTransformHelper.frustum(1f, width / height, 1f, 10f);
             glUniformMatrix4fv(projectionLoc, true, projection.toArray());
             glUniform1f(tLoc, (float) t);
-            for (Triangle triangle : triangles)
-                triangle.draw();
+            for (Box box : boxes)
+                box.draw();
             glfwSwapBuffers(window);
             glfwPollEvents();
             t+=0.1;
         }
-        for (Triangle triangle : triangles)
-            triangle.close();
+        for (Box box : boxes)
+            boxes.close();
     }
 }
