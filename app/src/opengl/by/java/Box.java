@@ -5,7 +5,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 /** 三角形を表すクラスです。 drawメソッドで描画でき、このインスタンスを破棄する場合は必ずcloseメソッドを呼んでください。
 */
-public class Triangle implements AutoCloseable{
+public class Box implements AutoCloseable{
     /** 頂点配列オブジェクトのID */
     private int vao;
     /**頂点バッファオブジェクトのiD */
@@ -16,18 +16,31 @@ public class Triangle implements AutoCloseable{
     private int vertexCount;
     /**頂点のインデックス数 */
     private int indexCount;
+    float[] cubeVertex;
+        int[] solidCubeIndex = {
+            0, 1, 2, 0, 2, 3, // 左
+            0, 3, 4, 0, 4, 5, // 裏
+            0, 5, 6, 0, 6, 1, // 下
+            7, 6, 5, 7, 5, 4, // 右
+            7, 4, 3, 7, 3, 2, // 上
+            7, 2, 1, 7, 1, 6  // 前
+        };
 
-    /**
-     * Triangleクラスを作成する。
-     * @param size 頂点の位置の次元。二次元なら2、三次元なら3
-     * @param vertexCount 頂点の数
-     * @param vertex 頂点配列。位置(3つの要素)と色(3つの要素)を交互に入れる。
-     * @param indexCount 頂点のインデックス数
-     * @param index 頂点のインデックスを格納した配列
-     */
-    public Triangle(int size, int vertexCount, float[] vertex, int indexCount, int[] index) {
-        this.vertexCount = vertexCount;
-        this.indexCount = indexCount;
+    public Triangle(Vec3 pos) {
+        new Box(3, 8, cubeVertex, 36, solidCubeIndex);
+        var size = 3;
+        this.vertexCount = 8;
+        this.indexCount = 36;
+cubeVertex = {
+        -1f + pos.x, -1f + pos.y, -1f + pos.z,  0f,    0f,   0f,  // (0)
+        -1f + pos.x, -1f + pos.y,  1f + pos.z,  0f,    0f,   0.8f,  // (1)
+        -1f + pos.x,  1f + pos.y,  1f + pos.z,  0f,    0.8f, 0f,  // (2)
+        -1f + pos.x,  1f + pos.y, -1f + pos.z,  0f,    0.8f, 0.8f,  // (3)
+        1f + pos.x,  1f + pos.y, -1f + pos.z,  0.8f,  0f,   0f,  // (4)
+        1f + pos.x, -1f + pos.y, -1f + pos.z,  0.8f,  0f,   0.8f,  // (5)
+        1f + pos.x, -1f + pos.y,  1f + pos.z,  0.8f,  0.8f, 0f,  // (6)
+        1f + pos.x,  1f + pos.y,  1f + pos.z,  0.8f,  0.8f, 0.8f   // (7)
+    };
 
         // 頂点配列オブジェクト
         vao = glGenVertexArrays();
