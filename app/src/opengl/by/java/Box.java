@@ -16,7 +16,7 @@ public class Box implements AutoCloseable{
     private int vertexCount;
     /**頂点のインデックス数 */
     private int indexCount;
-    static final int[] vertex = {
+    static final int[] index = {
         0, 1, 2, 0, 2, 3, // 左
         0, 3, 4, 0, 4, 5, // 裏
         0, 5, 6, 0, 6, 1, // 下
@@ -29,7 +29,7 @@ public class Box implements AutoCloseable{
         var size = 3;
         this.vertexCount = 8;
         this.indexCount = 36;
-        var index = new float[]{
+        var vertex = new float[]{
             -1f + pos.x, -1f + pos.y, -1f + pos.z,  0f,    0f,   0f,    // (0)
             -1f + pos.x, -1f + pos.y,  1f + pos.z,  0f,    0f,   0.8f,  // (1)
             -1f + pos.x,  1f + pos.y,  1f + pos.z,  0f,    0.8f, 0f,    // (2)
