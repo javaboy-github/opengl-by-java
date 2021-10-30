@@ -1,10 +1,10 @@
 #version 150 core
 
+in vec4 vertex_color;
 out vec4 fragment;
 uniform float t;
 
-void main()
-{
-    fragment = vec4(0.0, 0.0, 0.5, 1.0);
-    // fragment = vec4(sin(t), cos(t), 0.0, 1.0);
+void main() {
+    fragment = vec4(vertex_color.x, 0.0, 0.5, 1.0);
+    // fragment = vertex_color;
 }

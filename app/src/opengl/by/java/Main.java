@@ -118,6 +118,7 @@ public class Main {
             System.err.println("Failed to load main.vert.");
             System.exit(1);
         }
+        System.out.println(vertexShaderSource);
         glShaderSource(vobj, vertexShaderSource, "");
         glCompileShader(vobj);
         var status = new int[1];
