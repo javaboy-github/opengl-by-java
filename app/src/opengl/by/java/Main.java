@@ -222,6 +222,6 @@ public class Main {
             t+=0.1;
         }
         for (Box box : boxes)
-            boxes.close();
+            box.close();
     }
 }
