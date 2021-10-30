@@ -118,7 +118,6 @@ public class Main {
             System.err.println("Failed to load main.vert.");
             System.exit(1);
         }
-        System.out.println(vertexShaderSource);
         glShaderSource(vobj, vertexShaderSource, "");
         glCompileShader(vobj);
         var status = new int[1];
@@ -182,7 +181,6 @@ public class Main {
         glViewport(0, 0, size[0], size[1]);
 
         var pointOfView = new Vec3(3, 4, 5);
-
         float t = 0;
 
 		final var foward = new Vec3(0.01f, 0, 0);
@@ -192,8 +190,8 @@ public class Main {
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) pointOfView = pointOfView.plus(right);
-            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) pointOfView = pointOfView.minus(right);
+            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) pointOfView = pointOfView.plus(right);
+            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) pointOfView = pointOfView.minus(right);
             if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) pointOfView = pointOfView.plus(foward);
             if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) pointOfView = pointOfView.minus(foward);
             if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView = pointOfView.plus(up);
