@@ -172,13 +172,13 @@ public class Main {
         glEnable(GL_DEPTH_TEST); // 重ならない
 
         // veiwport
-        var size = new int[]{1260, 960}; // size[0] is width and size[1] is height
+        var size = new int[]{1260 * 2, 770 * 2}; // size[0] is width and size[1] is height
         glfwSetWindowSizeCallback(window, (window, width, height) -> {
             glViewport(0, 0, width, height);
-            size[0] = width * 4;
-            size[1] = height * 4;
+            size[0] = width;
+            size[1] = height;
         });
-        glViewport(0, 0, size[0], size[1]);
+        glViewport(0, 0, size[0] / 2, size[1] / 2);
 
         var pointOfView = new Vec3(3, 4, 5);
         float t = 0;
@@ -199,7 +199,7 @@ public class Main {
 
             var width = size[0];
             var height = size[1];
-            var model = AffineTransformHelper.scale(1 / width, 1 / height, 1);
+            var model = AffineTransformHelper.(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             var view = AffineTransformHelper.lookAt(
                 pointOfView,
                 // new Vec3(-1, -1, -1), // target
