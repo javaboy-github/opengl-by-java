@@ -199,7 +199,7 @@ public class Main {
 
             var width = size[0];
             var height = size[1];
-            var model = AffineTransformHelper.(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            var model = new Mat4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             var view = AffineTransformHelper.lookAt(
                 pointOfView,
                 // new Vec3(-1, -1, -1), // target
