@@ -150,8 +150,8 @@ public class AffineTransformHelper {
 		if (near == far)
 			return new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); // 単位行列
 		return new Mat4(
-			aspect * (float) tan(fovy / 2), 0, 0, 0,
-			0, (float) tan(fovy / 2), 0, 0,
+			1  / (float) tan(fovy / 2) / aspect, 0, 0, 0,
+			0, 1 / (float) tan(fovy / 2), 0, 0,
 			0, 0, -(far + near) / (far - near), -2 * far * near / (far - near),
 			0, 0, -1, 0
 		);
