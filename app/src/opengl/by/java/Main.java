@@ -173,19 +173,24 @@ public class Main {
 
         // veiwport
         var size = new int[]{1260 * 2, 770 * 2}; // size[0] is width and size[1] is height
-        glfwSetWindowSizeCallback(window, (window, width, height) -> {
-            glViewport(0, 0, width, height);
-            size[0] = width;
-            size[1] = height;
-        });
-        glViewport(0, 0, size[0] / 2, size[1] / 2);
+        org.lwjgl.glfw.GLFWWindowSizeCallbackI resize = (window, width, height) -> {
+            int[] widthPointer = new int[1];
+            int[] heightPointer = new int[1];
+            glfwGetFramebufferSize(window, widthPointer, heightPointer);
+            size[0] = widthPointer[0];
+            size[1] = heightPointer[0];
+            glViewport(0, 0, widthPointer[0], heightPointer[0]);
+        };
+        glfwSetWindowSizeCallback(window, resize);
+        resize.invoke(window, size[0], size[1]);
+        glViewport(0, 0, size[0], size[1]);
 
         var pointOfView = new Vec3(3, 4, 5);
         float t = 0;
 
-		final var foward = new Vec3(0.01f, 0, 0);
-		final var up = new Vec3(0, 0.01f, 0);
-		final var right = new Vec3(0, 0, 0.01f);
+		final var foward = new Vec3(0.02f, 0, 0);
+		final var up = new Vec3(0, 0.02f, 0);
+		final var right = new Vec3(0, 0, 0.02f);
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -199,7 +204,11 @@ public class Main {
 
             var width = size[0];
             var height = size[1];
-            var model = new Mat4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            // var model = AffineTransformHelper.translate(0,  (t * t + 10) % 20 - 10, 0); // 単位行列
+            /*var model = AffineTransformHelper.rotateByYAxis(t)
+                .mul(AffineTransformHelper.translate((float) Math.sin(t) * 3, 0, (float) Math.cos(t) * 3));
+            */var model = AffineTransformHelper.translate(0, 0, 0);
+
             var view = AffineTransformHelper.lookAt(
                 pointOfView,
                 // new Vec3(-1, -1, -1), // target
@@ -207,11 +216,11 @@ public class Main {
                 new Vec3(0, 1, 0)     // up
             );
             // var modelview = model.mul(view);
-            var modelview = view;
+            var modelview = view.mul(model);
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
             glUniformMatrix4fv(modelViewLoc, true, modelview.toArray());
-            var projection = AffineTransformHelper.frustum(1f, width / height, 1f, 10f);
+            var projection = AffineTransformHelper.frustum(1f, width / height, 0.1f, 100f);
             glUniformMatrix4fv(projectionLoc, true, projection.toArray());
             glUniform1f(tLoc, (float) t);
             for (Box box : boxes)

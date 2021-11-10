@@ -2,6 +2,7 @@
 
 uniform mat4 modelview;
 uniform mat4 projection;
+uniform float t;
 in vec4 position;
 in vec4 color;
 out vec4 vertex_color;
