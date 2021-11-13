@@ -220,7 +220,7 @@ public class Main {
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
             glUniformMatrix4fv(modelViewLoc, true, modelview.toArray());
-            var projection = AffineTransformHelper.frustum(1f, width / height, 0.1f, 100f);
+            var projection = AffineTransformHelper.frustum(1f, (float) width / (float) height, 0.1f, 100f);
             glUniformMatrix4fv(projectionLoc, true, projection.toArray());
             glUniform1f(tLoc, (float) t);
             for (Box box : boxes)
