@@ -146,7 +146,6 @@ public class AffineTransformHelper {
 	  * @return 変換行列
 	  */
 	public static Mat4 frustum(float fovy, float aspect, float near, float far) {
-		
 		if (near == far)
 			return new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1); // 単位行列
 		return new Mat4(
