@@ -173,6 +173,7 @@ public class Main {
 
         // veiwport
         var size = new int[]{1260 * 2, 770 * 2}; // size[0] is width and size[1] is height
+        float[] cursorPos = {size[0], size[1]};
         org.lwjgl.glfw.GLFWWindowSizeCallbackI resize = (window, width, height) -> {
             int[] widthPointer = new int[1];
             int[] heightPointer = new int[1];
@@ -184,6 +185,16 @@ public class Main {
         glfwSetWindowSizeCallback(window, resize);
         resize.invoke(window, size[0], size[1]);
         glViewport(0, 0, size[0], size[1]);
+
+
+        if (glfwRawMouseMotionSupported())
+            glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        glfwSetCursorPosCallback(window, (window, x, y) -> {
+            cursorPos[0] = ((float) x / size[0] * 2 - 1);
+            cursorPos[1] = ((float) y / size[1] * 2 - 1);
+            System.out.println(cursorPos[0] + " " + cursorPos[1]);
+        });
+
 
         var pointOfView = new Vec3(3, 4, 5);
         float t = 0;
@@ -207,7 +218,9 @@ public class Main {
             // var model = AffineTransformHelper.translate(0,  (t * t + 10) % 20 - 10, 0); // 単位行列
             /*var model = AffineTransformHelper.rotateByYAxis(t)
                 .mul(AffineTransformHelper.translate((float) Math.sin(t) * 3, 0, (float) Math.cos(t) * 3));
-            */var model = AffineTransformHelper.translate(0, 0, 0);
+            */var model = AffineTransformHelper.translate(0, 0, 0)
+                .mul(AffineTransformHelper.rotateByXAxis(cursorPos[0] * Math.PI * 2))
+                .mul(AffineTransformHelper.rotateByYAxis(cursorPos[1] * Math.PI * 2));
 
             var view = AffineTransformHelper.lookAt(
                 pointOfView,
