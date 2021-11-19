@@ -6,7 +6,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Program {
 	public int program;
 
-	public Program(String vertex, String fragment, Init initLogic) {
+	public Program(String vertex, String fragment) {
 		program = glCreateProgram();
 		int vobj = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vobj, vertex, "");
@@ -48,5 +48,25 @@ public class Program {
 
 	public void use() {
 		glUseProgram(program);
+	}
+
+	public static Program createFromSourcefile(String vertexShaderSourceFilename, String fragmentShaderSourceFilename) {
+		var vertexShaderSourceFile = Paths.get(vertexShaderSourceFilename);
+		String vertexShaderSource = null;
+		try {
+			vertexShaderSource = Files.readString(vertexShaderSourceFile);
+		} catch(IOException e) {
+			System.err.println("Failed to load " + vertexShaderSourceFilename);
+			throw new RuntimeException(e);
+		}
+		var fragmentShaderSourceFile = Paths.get(fragmentShaderSourceFilename);
+		String fragmentShaderSource = null;
+		try {
+			fragmentShaderSource = Files.readString(fragmentShaderSourceFile);
+		} catch(IOException e) {
+			System.err.println("Failed to load " + fragmentShaderSourceFilename);
+			throw new RuntimeException(e);
+		}
+		return new Program(vertexShaderSource, fragmentShaderSource);
 	}
 }
