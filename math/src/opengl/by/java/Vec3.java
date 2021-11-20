@@ -60,6 +60,18 @@ public class Vec3 {
 			this.z - target.z
 		);
 	}
+	
+	/** スカラ倍をする。
+	 * @param f どのくらい掛けるか
+	 * @return 結果
+	 */
+	public Vec3 scala(float f) {
+		return new Vec3(
+			this.x * f,
+			this.y * f,
+			this.z * f
+		);
+	}
 
 	/**ベクトルを正規化する。
 	@return 正規化した後のベクトル */
