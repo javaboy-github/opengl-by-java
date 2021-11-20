@@ -104,7 +104,8 @@ public class Main {
         GL.createCapabilities();
         
         Box[] boxes = {
-            new Box(new Vec3(0, 0, 0))
+            new Box(new Vec3(0, 0, 0)),
+            new Box(new Vec3(4, 0, 0)),
         };
 
         // Create program
@@ -172,9 +173,12 @@ public class Main {
         glEnable(GL_DEPTH_TEST); // 重ならない
 
         // veiwport
-        var size = new int[]{1260 * 2, 770 * 2}; // size[0] is width and size[1] is height
+        var size = new int[]{1260, 770}; // size[0] is width and size[1] is height
+        var size2 = new int[]{1260, 770};
         float[] cursorPos = {size[0], size[1]};
         org.lwjgl.glfw.GLFWWindowSizeCallbackI resize = (window, width, height) -> {
+            size2[0] = width;
+            size2[1] = height;
             int[] widthPointer = new int[1];
             int[] heightPointer = new int[1];
             glfwGetFramebufferSize(window, widthPointer, heightPointer);
@@ -190,42 +194,39 @@ public class Main {
         if (glfwRawMouseMotionSupported())
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         glfwSetCursorPosCallback(window, (window, x, y) -> {
-            cursorPos[0] = ((float) x / size[0] * 2 - 1);
-            cursorPos[1] = ((float) y / size[1] * 2 - 1);
+            cursorPos[0] = ((float) x / size2[0] * 2 - 1);
+            cursorPos[1] = ((float) y / size2[1] * 2 - 1);
             System.out.println(cursorPos[0] + " " + cursorPos[1]);
         });
 
 
-        var pointOfView = new Vec3(3, 4, 5);
+        var position = new Vec3(3, 4, 5);
         float t = 0;
 
-		final var foward = new Vec3(0.02f, 0, 0);
-		final var up = new Vec3(0, 0.02f, 0);
-		final var right = new Vec3(0, 0, 0.02f);
+		final var foward = new Vec3(0, 0, 1);
+		final var up = new Vec3(0, 1, 0);
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) pointOfView = pointOfView.plus(right);
-            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) pointOfView = pointOfView.minus(right);
-            if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) pointOfView = pointOfView.plus(foward);
-            if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) pointOfView = pointOfView.minus(foward);
-            if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) pointOfView = pointOfView.plus(up);
-            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) pointOfView = pointOfView.minus(up);
+            var pointOfView = AffineTransformHelper.translate(cursorPos[0] * -5, cursorPos[1] * 5, 0).mul(new Vec3(-1, -1, -1)).normalize();
+            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) position = position.plus(pointOfView.scala(0.5f));
+            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) position = position.minus(pointOfView.scala(0.5f));
+            if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) position = position.plus(new Vec3(pointOfView.y, pointOfView.x, 0).scala(0.5f));
+            if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) position = position.minus(new Vec3(pointOfView.y, pointOfView.x, 0).scala(0.5f));
+            if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) position = position.plus(up);
+            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) position = position.minus(up);
 
             var width = size[0];
             var height = size[1];
             // var model = AffineTransformHelper.translate(0,  (t * t + 10) % 20 - 10, 0); // 単位行列
             /*var model = AffineTransformHelper.rotateByYAxis(t)
                 .mul(AffineTransformHelper.translate((float) Math.sin(t) * 3, 0, (float) Math.cos(t) * 3));
-            */var model = AffineTransformHelper.translate(0, 0, 0)
-                .mul(AffineTransformHelper.rotateByXAxis(cursorPos[0] * Math.PI * 2))
-                .mul(AffineTransformHelper.rotateByYAxis(cursorPos[1] * Math.PI * 2));
+            */var model = AffineTransformHelper.translate(0, 0, 0);
 
             var view = AffineTransformHelper.lookAt(
-                pointOfView,
-                // new Vec3(-1, -1, -1), // target
-                pointOfView.plus(new Vec3(-3, -4, -5)),
+                position, // position
+                pointOfView.plus(position), // point of view
                 new Vec3(0, 1, 0)     // up
             );
             // var modelview = model.mul(view);

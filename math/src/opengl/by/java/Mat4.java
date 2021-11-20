@@ -103,6 +103,18 @@ public class Mat4 {
     );
   }
 
+	/**ベクトルと積を取る。このベクトルは一時的に(x, y, z, 1)のベクトルに変形される。なお、対象の行列はアフィン変換行列のもの出ないと正しく機能しない。 
+   * @param target 掛けるベクトル
+   * @return 結果
+  */
+	public Vec3 mul(Vec3 target) {
+		return new Vec3(
+      m11 * target.x + m12 * target.y + m13 * target.z + m14,
+      m21 * target.x + m22 * target.y + m23 * target.z + m24,
+      m31 * target.x + m32 * target.y + m33 * target.z + m34
+    );
+	}
+
   /** @inheritDoc */
   @Override
   public String toString() {
