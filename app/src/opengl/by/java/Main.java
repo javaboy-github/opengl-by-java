@@ -109,64 +109,17 @@ public class Main {
         };
 
         // Create program
-        var program = glCreateProgram();
-        int vobj = glCreateShader(GL_VERTEX_SHADER);
-        var vertexShaderSourceFile = Paths.get("src/main.vert");
-        String vertexShaderSource = null;
-        try {
-            vertexShaderSource = Files.readString(vertexShaderSourceFile);
-        } catch(IOException e) {
-            System.err.println("Failed to load main.vert.");
-            System.exit(1);
-        }
-        glShaderSource(vobj, vertexShaderSource, "");
-        glCompileShader(vobj);
-        var status = new int[1];
-        glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
-        if (status[0] == GL_FALSE){
-            var bufSize = new int[1];
-            glGetShaderiv(vobj, GL_INFO_LOG_LENGTH, bufSize);
-            if (bufSize[0] > 1) {
-                throw new RuntimeException("vertex shaderのコンパイルに失敗しました。エラーメッセージ:"
-                    + glGetShaderInfoLog(vobj, bufSize[0]));
-            }
-            else throw new RuntimeException("vertex shaderのコンパイルに失敗しました");
-        }
-        glAttachShader(program, vobj);
-        glDeleteShader(vobj);
-        int fobj = glCreateShader(GL_FRAGMENT_SHADER);
-        var fragmentShaderSourceFile = Paths.get("src/main.frag");
-        String fragmentShaderSource = null;
-        try {
-            fragmentShaderSource = Files.readString(fragmentShaderSourceFile);
-        } catch(IOException e) {
-            System.err.println("Failed to load main.frag.");
-            System.exit(1);
-        }
-        glShaderSource(fobj, fragmentShaderSource, "");
-        glCompileShader(fobj);
-        status = new int[1];
-        glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
-        if (status[0] == GL_FALSE){
-            var bufSize = new int[1];
-            glGetShaderiv(vobj, GL_INFO_LOG_LENGTH, bufSize);
-            if (bufSize[0] > 1) {
-                throw new RuntimeException("fragment shaderのコンパイルに失敗しました。エラーメッセージ:"
-                    + glGetShaderInfoLog(vobj, bufSize[0]));
-            }
-            else throw new RuntimeException("vertex shaderのコンパイルに失敗しました");
-        }
-        glAttachShader(program, fobj);
-        glDeleteShader(fobj);
-        glBindAttribLocation(program, 0, "position");
-        glBindAttribLocation(program, 1, "color");
-        glBindFragDataLocation(program, 0, "fragment");
-        glLinkProgram(program);
-        glUseProgram(program);
+        var program = Program.createFromSourcefile("src/main.vert", "src/main.frag");
+        var programId = program.program;
+        glBindAttribLocation(programId, 0, "position");
+        glBindAttribLocation(programId, 1, "color");
+        glBindFragDataLocation(programId, 0, "fragment");
+        program.link();
+        program.use();
 
-        var modelViewLoc = glGetUniformLocation(program, "modelview");
-        var projectionLoc = glGetUniformLocation(program, "projection");
-        var tLoc = glGetUniformLocation(program, "t");
+        var modelViewLoc = glGetUniformLocation(programId, "modelview");
+        var projectionLoc = glGetUniformLocation(programId, "projection");
+        var tLoc = glGetUniformLocation(programId, "t");
 
         glClearColor(1, 1, 1, 0);
         glEnable(GL_TEXTURE_2D); //テクスチャ表示
