@@ -155,9 +155,7 @@ public class Main {
 
         var position = new Vec3(3, 4, 5);
         float t = 0;
-
-		final var foward = new Vec3(0, 0, 1);
-		final var up = new Vec3(0, 1, 0);
+        final var up = new Vec3(0, 1, 0);
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
