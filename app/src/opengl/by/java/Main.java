@@ -16,6 +16,8 @@ import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import static opengl.by.java.AffineTransformHelper.*;
+
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -160,7 +162,7 @@ public class Main {
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            var pointOfView = AffineTransformHelper.translate(cursorPos[0] * -5, cursorPos[1] * 5, 0).mul(new Vec3(-1, -1, -1)).normalize();
+            var pointOfView = translate(cursorPos[0] * -5, cursorPos[1] * 5, 0).mul(new Vec3(-1, -1, -1)).normalize();
             if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) position = position.plus(pointOfView.scala(0.5f));
             if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) position = position.minus(pointOfView.scala(0.5f));
             if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) position = position.plus(new Vec3(pointOfView.y, pointOfView.x, 0).scala(0.5f));
@@ -173,9 +175,9 @@ public class Main {
             // var model = AffineTransformHelper.translate(0,  (t * t + 10) % 20 - 10, 0); // 単位行列
             /*var model = AffineTransformHelper.rotateByYAxis(t)
                 .mul(AffineTransformHelper.translate((float) Math.sin(t) * 3, 0, (float) Math.cos(t) * 3));
-            */var model = AffineTransformHelper.translate(0, 0, 0);
+            */var model = translate(0, 0, 0);
 
-            var view = AffineTransformHelper.lookAt(
+            var view = lookAt(
                 position, // position
                 pointOfView.plus(position), // point of view
                 new Vec3(0, 1, 0)     // up
@@ -185,7 +187,7 @@ public class Main {
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
             glUniformMatrix4fv(modelViewLoc, true, modelview.toArray());
-            var projection = AffineTransformHelper.frustum(1f, (float) width / (float) height, 0.1f, 100f);
+            var projection = frustum(1f, (float) width / (float) height, 0.1f, 100f);
             glUniformMatrix4fv(projectionLoc, true, projection.toArray());
             glUniform1f(tLoc, (float) t);
             for (Box box : boxes)
