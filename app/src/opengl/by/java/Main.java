@@ -16,8 +16,12 @@ import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+<<<<<<< HEAD
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+=======
+import static opengl.by.java.AffineTransformHelper.*;
+>>>>>>> 0352bf6bfc8936e1fdcf76010f59598e7d6dc407
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -112,64 +116,17 @@ public class Main {
         };
 
         // Create program
-        var program = glCreateProgram();
-        int vobj = glCreateShader(GL_VERTEX_SHADER);
-        var vertexShaderSourceFile = Paths.get("src/main.vert");
-        String vertexShaderSource = null;
-        try {
-            vertexShaderSource = Files.readString(vertexShaderSourceFile);
-        } catch(IOException e) {
-            System.err.println("Failed to load main.vert.");
-            System.exit(1);
-        }
-        glShaderSource(vobj, vertexShaderSource, "");
-        glCompileShader(vobj);
-        var status = new int[1];
-        glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
-        if (status[0] == GL_FALSE){
-            var bufSize = new int[1];
-            glGetShaderiv(vobj, GL_INFO_LOG_LENGTH, bufSize);
-            if (bufSize[0] > 1) {
-                throw new RuntimeException("vertex shaderのコンパイルに失敗しました。エラーメッセージ:"
-                    + glGetShaderInfoLog(vobj, bufSize[0]));
-            }
-            else throw new RuntimeException("vertex shaderのコンパイルに失敗しました");
-        }
-        glAttachShader(program, vobj);
-        glDeleteShader(vobj);
-        int fobj = glCreateShader(GL_FRAGMENT_SHADER);
-        var fragmentShaderSourceFile = Paths.get("src/main.frag");
-        String fragmentShaderSource = null;
-        try {
-            fragmentShaderSource = Files.readString(fragmentShaderSourceFile);
-        } catch(IOException e) {
-            System.err.println("Failed to load main.frag.");
-            System.exit(1);
-        }
-        glShaderSource(fobj, fragmentShaderSource, "");
-        glCompileShader(fobj);
-        status = new int[1];
-        glGetShaderiv(vobj, GL_COMPILE_STATUS, status);
-        if (status[0] == GL_FALSE){
-            var bufSize = new int[1];
-            glGetShaderiv(vobj, GL_INFO_LOG_LENGTH, bufSize);
-            if (bufSize[0] > 1) {
-                throw new RuntimeException("fragment shaderのコンパイルに失敗しました。エラーメッセージ:"
-                    + glGetShaderInfoLog(vobj, bufSize[0]));
-            }
-            else throw new RuntimeException("vertex shaderのコンパイルに失敗しました");
-        }
-        glAttachShader(program, fobj);
-        glDeleteShader(fobj);
-        glBindAttribLocation(program, 0, "position");
-        glBindAttribLocation(program, 1, "color");
-        glBindFragDataLocation(program, 0, "fragment");
-        glLinkProgram(program);
-        glUseProgram(program);
+        var program = Program.createFromSourcefile("src/main.vert", "src/main.frag");
+        var programId = program.program;
+        glBindAttribLocation(programId, 0, "position");
+        glBindAttribLocation(programId, 1, "color");
+        glBindFragDataLocation(programId, 0, "fragment");
+        program.link();
+        program.use();
 
-        var modelViewLoc = glGetUniformLocation(program, "modelview");
-        var projectionLoc = glGetUniformLocation(program, "projection");
-        var tLoc = glGetUniformLocation(program, "t");
+        var modelViewLoc = glGetUniformLocation(programId, "modelview");
+        var projectionLoc = glGetUniformLocation(programId, "projection");
+        var tLoc = glGetUniformLocation(programId, "t");
 
         glClearColor(1, 1, 1, 0);
         glEnable(GL_TEXTURE_2D); //テクスチャ表示
@@ -204,9 +161,7 @@ public class Main {
 
         var position = new Vec3(3, 4, 5);
         float t = 0;
-
-		final var foward = new Vec3(0, 0, 1);
-		final var up = new Vec3(0, 1, 0);
+        final var up = new Vec3(0, 1, 0);
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -229,9 +184,9 @@ public class Main {
             // var model = AffineTransformHelper.translate(0,  (t * t + 10) % 20 - 10, 0); // 単位行列
             /*var model = AffineTransformHelper.rotateByYAxis(t)
                 .mul(AffineTransformHelper.translate((float) Math.sin(t) * 3, 0, (float) Math.cos(t) * 3));
-            */var model = AffineTransformHelper.translate(0, 0, 0);
+            */var model = translate(0, 0, 0);
 
-            var view = AffineTransformHelper.lookAt(
+            var view = lookAt(
                 position, // position
                 pointOfView.plus(position), // point of view
                 new Vec3(0, 1, 0)     // up
@@ -241,7 +196,7 @@ public class Main {
 
             // glUniformMatrix4fv(modelViewLoc, false, pointer);
             glUniformMatrix4fv(modelViewLoc, true, modelview.toArray());
-            var projection = AffineTransformHelper.frustum(1f, (float) width / (float) height, 0.1f, 100f);
+            var projection = frustum(1f, (float) width / (float) height, 0.1f, 100f);
             glUniformMatrix4fv(projectionLoc, true, projection.toArray());
             glUniform1f(tLoc, (float) t);
             for (Box box : boxes)
