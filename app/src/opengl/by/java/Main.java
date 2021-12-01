@@ -16,6 +16,9 @@ import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -196,7 +199,6 @@ public class Main {
         glfwSetCursorPosCallback(window, (window, x, y) -> {
             cursorPos[0] = ((float) x / size2[0] * 2 - 1);
             cursorPos[1] = ((float) y / size2[1] * 2 - 1);
-            System.out.println(cursorPos[0] + " " + cursorPos[1]);
         });
 
 
@@ -209,7 +211,12 @@ public class Main {
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            var pointOfView = AffineTransformHelper.translate(cursorPos[0] * -5, cursorPos[1] * 5, 0).mul(new Vec3(-1, -1, -1)).normalize();
+            var pointOfView = 
+              new Vec3(
+                  (float) cos(yaw) * (float) Math.cos(pitch),
+                  (float) sin(pitch),
+                  (float) sin(yaw) * (float) Math.cos(pitch)
+              ).normalize();
             if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) position = position.plus(pointOfView.scala(0.5f));
             if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) position = position.minus(pointOfView.scala(0.5f));
             if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) position = position.plus(new Vec3(pointOfView.y, pointOfView.x, 0).scala(0.5f));
