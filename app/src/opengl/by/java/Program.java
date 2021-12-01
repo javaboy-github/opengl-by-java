@@ -2,6 +2,9 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.glfw.GLFW.*;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 /** This class has fragment shader and vertex shader */
 public class Program {
 	public int program;
