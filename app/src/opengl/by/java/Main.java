@@ -16,12 +16,9 @@ import static org.lwjgl.opengl.GL30.glBindFragDataLocation;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-<<<<<<< HEAD
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
-=======
 import static opengl.by.java.AffineTransformHelper.*;
->>>>>>> 0352bf6bfc8936e1fdcf76010f59598e7d6dc407
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -135,7 +132,6 @@ public class Main {
         // veiwport
         var size = new int[]{1260, 770}; // size[0] is width and size[1] is height
         var size2 = new int[]{1260, 770};
-        float[] cursorPos = {size[0], size[1]};
         org.lwjgl.glfw.GLFWWindowSizeCallbackI resize = (window, width, height) -> {
             size2[0] = width;
             size2[1] = height;
@@ -151,12 +147,26 @@ public class Main {
         glViewport(0, 0, size[0], size[1]);
 
 
-        if (glfwRawMouseMotionSupported())
+        boolean[] isFirst = {true};
+        double[] cursorPos = {size[0], size[1]};
+        double[] offsetPos = {0, 0};
+        double[] angle = {0, 0};
+        if (glfwRawMouseMotionSupported()) {
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-        glfwSetCursorPosCallback(window, (window, x, y) -> {
-            cursorPos[0] = ((float) x / size2[0] * 2 - 1);
-            cursorPos[1] = ((float) y / size2[1] * 2 - 1);
-        });
+            glfwSetCursorPosCallback(window, (window, x, y) -> {
+                System.out.println(isFirst[0]);
+                if (!isFirst[0]) {
+                    offsetPos[0] = x - cursorPos[0];
+                    offsetPos[1] = y - cursorPos[1];
+
+                    angle[0] += offsetPos[0];
+                    angle[1] += offsetPos[1];
+                }
+                cursorPos[0] = x;
+                cursorPos[1] = y;
+                isFirst[0] = false;
+            });
+        }
 
 
         var position = new Vec3(3, 4, 5);
@@ -165,6 +175,10 @@ public class Main {
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            var yaw = angle[0];
+            var pitch = angle[1];
+            System.out.printf("%g %g\n", yaw, pitch);
 
             var pointOfView = 
               new Vec3(
