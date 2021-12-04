@@ -151,22 +151,21 @@ public class Main {
         double[] cursorPos = {size[0], size[1]};
         double[] offsetPos = {0, 0};
         double[] angle = {0, 0};
-        if (glfwRawMouseMotionSupported()) {
+        if (glfwRawMouseMotionSupported())
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-            glfwSetCursorPosCallback(window, (window, x, y) -> {
-                System.out.println(isFirst[0]);
-                if (!isFirst[0]) {
-                    offsetPos[0] = x - cursorPos[0];
-                    offsetPos[1] = y - cursorPos[1];
+        glfwSetCursorPosCallback(window, (window, x, y) -> {
+            System.out.println(isFirst[0]);
+            if (!isFirst[0]) {
+                offsetPos[0] = x - cursorPos[0];
+                offsetPos[1] = y - cursorPos[1];
 
-                    angle[0] += offsetPos[0];
-                    angle[1] += offsetPos[1];
-                }
-                cursorPos[0] = x;
-                cursorPos[1] = y;
-                isFirst[0] = false;
-            });
-        }
+                angle[0] += offsetPos[0] * 0.1;
+                angle[1] += offsetPos[1] * 0.1;
+            }
+            cursorPos[0] = x;
+            cursorPos[1] = y;
+            isFirst[0] = false;
+        });
 
 
         var position = new Vec3(3, 4, 5);
