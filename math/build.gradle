@@ -1,5 +1,5 @@
 plugins {
-	id 'java'
+	id 'scala'
 }
 
 repositories {
@@ -7,11 +7,12 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.scala-lang:scala-library:2.12.+'
 }
 
 sourceSets {
 	main {
-		java {
+		scala {
 			srcDirs 'src'
 		}
 	}
