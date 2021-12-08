@@ -150,17 +150,16 @@ public class Main {
         boolean[] isFirst = {true};
         double[] cursorPos = {size[0], size[1]};
         double[] offsetPos = {0, 0};
-        double[] angle = {0, 0};
+        double[] angle = {100, -0.5};
         if (glfwRawMouseMotionSupported())
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
         glfwSetCursorPosCallback(window, (window, x, y) -> {
-            System.out.println(isFirst[0]);
             if (!isFirst[0]) {
                 offsetPos[0] = x - cursorPos[0];
                 offsetPos[1] = y - cursorPos[1];
 
-                angle[0] += offsetPos[0] * 0.1;
-                angle[1] += offsetPos[1] * 0.1;
+                angle[0] += offsetPos[0] * 0.005;
+                angle[1] += offsetPos[1] * 0.005;
             }
             cursorPos[0] = x;
             cursorPos[1] = y;
@@ -177,7 +176,6 @@ public class Main {
 
             var yaw = angle[0];
             var pitch = angle[1];
-            System.out.printf("%g %g\n", yaw, pitch);
 
             var pointOfView = 
               new Vec3(
