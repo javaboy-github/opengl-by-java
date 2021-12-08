@@ -24,20 +24,24 @@ public class Box implements AutoCloseable{
         7, 4, 3, 7, 3, 2, // 上
         7, 2, 1, 7, 1, 6  // 前
     };
+    /** シェーダープログラム */
+    private Program program;
 
-    public Box(Vec3 pos) {
+    public Box(Vec3 pos, Vec3 boxSize, Program program) {
+        this.program = program;
         var size = 3;
         this.vertexCount = 8;
         this.indexCount = 36;
+        var s = new Vec3(boxSize.x / 2, boxSize.y / 2, boxSize.z / 2);
         var vertex = new float[]{
-            -1f + pos.x, -1f + pos.y, -1f + pos.z,  0f,    0f,   0f,    // (0)
-            -1f + pos.x, -1f + pos.y,  1f + pos.z,  0f,    0f,   0.8f,  // (1)
-            -1f + pos.x,  1f + pos.y,  1f + pos.z,  0f,    0.8f, 0f,    // (2)
-            -1f + pos.x,  1f + pos.y, -1f + pos.z,  0f,    0.8f, 0.8f,  // (3)
-             1f + pos.x,  1f + pos.y, -1f + pos.z,  0.8f,  0f,   0f,    // (4)
-             1f + pos.x, -1f + pos.y, -1f + pos.z,  0.8f,  0f,   0.8f,  // (5)
-             1f + pos.x, -1f + pos.y,  1f + pos.z,  0.8f,  0.8f, 0f,    // (6)
-             1f + pos.x,  1f + pos.y,  1f + pos.z,  0.8f,  0.8f, 0.8f   // (7)
+            -s.x + pos.x, -s.y + pos.y, -s.z + pos.z,  0f,    0f,   0f,    // (0)
+            -s.x + pos.x, -s.y + pos.y,  s.z + pos.z,  0f,    0f,   0.8f,  // (1)
+            -s.x + pos.x,  s.y + pos.y,  s.z + pos.z,  0f,    0.8f, 0f,    // (2)
+            -s.x + pos.x,  s.y + pos.y, -s.z + pos.z,  0f,    0.8f, 0.8f,  // (3)
+             s.x + pos.x,  s.y + pos.y, -s.z + pos.z,  0.8f,  0f,   0f,    // (4)
+             s.x + pos.x, -s.y + pos.y, -s.z + pos.z,  0.8f,  0f,   0.8f,  // (5)
+             s.x + pos.x, -s.y + pos.y,  s.z + pos.z,  0.8f,  0.8f, 0f,    // (6)
+             s.x + pos.x,  s.y + pos.y,  s.z + pos.z,  0.8f,  0.8f, 0.8f   // (7)
         };
 
         // 頂点配列オブジェクト
@@ -64,6 +68,7 @@ public class Box implements AutoCloseable{
     }
     
     public void draw() {
+        program.use();
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
         // glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount); // 折線で描画

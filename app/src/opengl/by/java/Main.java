@@ -18,6 +18,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import static java.lang.Math.acos;
 import static opengl.by.java.AffineTransformHelper.*;
 
 import java.io.IOException;
@@ -107,11 +108,6 @@ public class Main {
     private void loop() {
         GL.createCapabilities();
         
-        Box[] boxes = {
-            new Box(new Vec3(0, 0, 0)),
-            new Box(new Vec3(4, 0, 0)),
-        };
-
         // Create program
         var program = Program.createFromSourcefile("src/main.vert", "src/main.frag");
         var programId = program.program;
@@ -119,7 +115,15 @@ public class Main {
         glBindAttribLocation(programId, 1, "color");
         glBindFragDataLocation(programId, 0, "fragment");
         program.link();
-        program.use();
+
+        Box[] boxes = {
+            new Box(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
+            new Box(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
+            new Box(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
+            new Box(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
+            new Box(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
+        };
+
 
         var modelViewLoc = glGetUniformLocation(programId, "modelview");
         var projectionLoc = glGetUniformLocation(programId, "projection");
@@ -177,18 +181,14 @@ public class Main {
             var yaw = angle[0];
             var pitch = angle[1];
 
+            // 視線
             var pointOfView = 
               new Vec3(
                   (float) cos(yaw) * (float) Math.cos(pitch),
                   (float) sin(pitch),
                   (float) sin(yaw) * (float) Math.cos(pitch)
               ).normalize();
-            if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) position = position.plus(pointOfView.scala(0.5f));
-            if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) position = position.minus(pointOfView.scala(0.5f));
-            if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) position = position.plus(new Vec3(pointOfView.y, pointOfView.x, 0).scala(0.5f));
-            if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) position = position.minus(new Vec3(pointOfView.y, pointOfView.x, 0).scala(0.5f));
-            if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) position = position.plus(up);
-            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) position = position.minus(up);
+            position = position.plus(move(pointOfView));
 
             var width = size[0];
             var height = size[1];
@@ -218,5 +218,35 @@ public class Main {
         }
         for (Box box : boxes)
             box.close();
+    }
+
+    public Vec3 move(Vec3 pointOfView) {
+        var result = Vec3.ZERO;
+
+        var speed = 0.5f;
+
+        var tmp = pointOfView.normalize();
+        tmp = new Vec3(tmp.x, 0, tmp.z);
+        if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) // W
+            result = result.plus(tmp);
+        if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) // S
+            result = result.minus(tmp);
+
+        var angle = acos(pointOfView.x) + (pointOfView.z > 0 ? 0 : Math.PI);
+        tmp = new Vec3(pointOfView.length() * (float) sin(angle), 0, -pointOfView.length() * (float) cos(angle)).normalize();
+        if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) // A
+            result = result.plus(tmp);
+        if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) // D
+            result = result.minus(tmp);
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) // SPACE
+            result = result.plus(new Vec3(0, 1, 0));
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) // SHIFT (LEFT)
+            result = result.minus(new Vec3(0, 1, 0));
+
+        if (result.length() != 0)
+            result = result.normalize().scala(speed);
+
+        return result;
     }
 }

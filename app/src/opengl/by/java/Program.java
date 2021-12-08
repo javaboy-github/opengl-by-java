@@ -48,12 +48,14 @@ public class Program {
 		glDeleteShader(fobj);
 	}
 
-	public void link() {
+	public Program link() {
 		glLinkProgram(program);
+		return this;
 	}
 
-	public void use() {
+	public Program use() {
 		glUseProgram(program);
+		return this;
 	}
 
 	public static Program createFromSourcefile(String vertexShaderSourceFilename, String fragmentShaderSourceFilename) {
