@@ -220,20 +220,21 @@ public class Main {
             box.close();
     }
 
+    boolean isMoveBy3D = false;
     public Vec3 move(Vec3 pointOfView) {
         var result = Vec3.ZERO;
 
         var speed = 0.5f;
 
         var tmp = pointOfView.normalize();
-        tmp = new Vec3(tmp.x, 0, tmp.z);
         if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) // W
             result = result.plus(tmp);
         if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) // S
             result = result.minus(tmp);
 
         var angle = acos(pointOfView.x) + (pointOfView.z > 0 ? 0 : Math.PI);
-        tmp = new Vec3(pointOfView.length() * (float) sin(angle), 0, -pointOfView.length() * (float) cos(angle)).normalize();
+        // tmp = new Vec3(pointOfView.length() * (float) sin(angle), 0, -pointOfView.length() * (float) cos(angle)).normalize();
+        tmp = pointOfView.normalize().cross(new Vec3(0, -1, 0));
         if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) // A
             result = result.plus(tmp);
         if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) // D
@@ -244,8 +245,13 @@ public class Main {
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) // SHIFT (LEFT)
             result = result.minus(new Vec3(0, 1, 0));
 
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) // Qキーによって見ている方向へ三次元空間的に動くか変える。ちょうどマイクラのクリエイティブのように
+            isMoveBy3D = !isMoveBy3D;
+        if (!isMoveBy3D)
+            result = new Vec3(result.x, 0, result.z);
         if (result.length() != 0)
             result = result.normalize().scala(speed);
+
 
         return result;
     }
