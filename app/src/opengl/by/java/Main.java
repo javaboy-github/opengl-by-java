@@ -157,6 +157,7 @@ public class Main {
         double[] angle = {100, -0.5};
         if (glfwRawMouseMotionSupported())
             glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPosCallback(window, (window, x, y) -> {
             if (!isFirst[0]) {
                 offsetPos[0] = x - cursorPos[0];
