@@ -11,5 +11,5 @@ class Vec3(val x: Float, val y: Float, val z: Float) {
     def dot(target: Vec3) = x*target.x + y*target.y + z*target.z
     def normalize() = new Vec3(x/len(), y/len(), z/len())
     def len() = (x + y + z) / 3
-    def toString() = s"[$x, $y, $z]"
+    override def toString() = s"[$x, $y, $z]"
 }
