@@ -33,6 +33,8 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 
+    implementation 'org.l33tlabs.twl:pngdecoder:1.0'
+
 
     implementation project(':math')
     // 数学ライブラリ
