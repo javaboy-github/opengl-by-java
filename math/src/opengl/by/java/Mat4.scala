@@ -22,6 +22,6 @@ class Mat4(val m:Array[Float]) {
     def get(row: Int, column: Int): Float = {
         if (row > 4 || row < 1 || column > 4 || column < 1)
             throw new java.lang.IndexOutOfBoundsException()
-        return m(row -1 + (column-1)*4)
+        m(row -1 + (column-1)*4)
     }
 }
