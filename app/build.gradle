@@ -5,7 +5,7 @@ plugins {
 }
 
 // LWJGL3用
-project.ext.lwjglVersion = "3.2.2"
+project.ext.lwjglVersion = "3.3.0"
 switch (OperatingSystem.current()) {
     case OperatingSystem.LINUX:
         project.ext.lwjglNatives = "natives-linux"

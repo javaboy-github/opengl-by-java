@@ -67,19 +67,6 @@ public class TexturedBox implements AutoCloseable{
         vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertex, GL_STATIC_DRAW);
-
-        // 結合されている頂点バッファオブジェクトを in 変数から参照できるようにする
-        final int vertexSize = 4 * 8;
-        glVertexAttribPointer(0, size, GL_FLOAT, false, vertexSize, 0);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, vertexSize, 2 * 4);
-        glEnableVertexAttribArray(1);
-
-        // インデックスの頂点バッファオブジェクト
-        ibo = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * 4, GL_STATIC_DRAW);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, index, GL_STATIC_DRAW);
     }
     
     public void draw() {
