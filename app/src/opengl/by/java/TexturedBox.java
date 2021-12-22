@@ -5,7 +5,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 /** テクスチャ付きのボックスを表すクラスです。 drawメソッドで描画でき、このインスタンスを破棄する場合は必ずcloseメソッドを呼んでください。
 */
-public class TexturedBox implements AutoCloseable{
+public class TexturedBox implements Box {
     /** 頂点配列オブジェクトのID */
     private int vao;
     /**頂点バッファオブジェクトのiD */
@@ -69,6 +69,7 @@ public class TexturedBox implements AutoCloseable{
         glBufferData(GL_ARRAY_BUFFER, vertex, GL_STATIC_DRAW);
     }
     
+    @Override
     public void draw() {
         program.use();
         glBindVertexArray(vao);

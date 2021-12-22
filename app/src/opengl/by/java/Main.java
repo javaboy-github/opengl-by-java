@@ -117,11 +117,11 @@ public class Main {
         program.link();
 
         Box[] boxes = {
-            new Box(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
-            new Box(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
-            new Box(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
-            new Box(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
-            new Box(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
+            new NormalBox(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
+            new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
+            new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
+            new NormalBox(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
+            new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
         };
 
 
