@@ -1,3 +1,5 @@
+package opengl.by.java
+
 class Mat4(val m:Array[Float]) {
     def +(target: Mat4) = new Mat4((m zip target.m).map(e => e._1 + e._2))
     def *(target: Mat4) =
@@ -22,5 +24,6 @@ class Mat4(val m:Array[Float]) {
     def get(row: Int, column: Int): Float = {
         if (row > 4 || row < 1 || column > 4 || column < 1)
             throw new java.lang.IndexOutOfBoundsException()
+        return m(row -1 + (column-1)*4)
     }
 }
