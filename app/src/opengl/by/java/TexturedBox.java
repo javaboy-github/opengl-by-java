@@ -95,7 +95,7 @@ public class TexturedBox implements Box {
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * FLOAT_SIZE,6 * FLOAT_SIZE);
         glEnableVertexAttribArray(2);
-r        glUniform1i(glGetUniformLocation(program.program, "texture1"), textures[0].getId());
+        glUniform1i(glGetUniformLocation(program.program, "texture1"), textures[0].getId());
     }
 
     @Override
