@@ -3,8 +3,12 @@ package opengl.by.java;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import de.matthiasmann.twl.utils.PNGDecoder;
+
+import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Texture {
     private int id;
@@ -17,7 +21,8 @@ public class Texture {
     }
 
     public static Texture loadTexture(String filename) throws IOException {
-        PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(filename));
+//        PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(filename));
+        var decoder = new PNGDecoder(new FileInputStream(Paths.get(filename).toFile()));
         ByteBuffer buffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
         decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
         buffer.flip();

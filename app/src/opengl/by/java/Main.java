@@ -116,12 +116,22 @@ public class Main {
         glBindFragDataLocation(programId, 0, "fragment");
         program.link();
 
+        Texture texture = null;
+        try {
+            texture = Texture.loadTexture("src/texture.png");
+        }catch(IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        var program2 = Program.createFromSourcefile("src/main2.vert", "src/main2.frag").link();
+
         Box[] boxes = {
-            new NormalBox(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
-            new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
-            new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
-            new NormalBox(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
-            new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
+//            new NormalBox(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
+//            new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
+//            new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
+//            new NormalBox(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
+//            new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
+            new TexturedBox(new Vec3(-4, 0, 0), new Vec3(2, 2, 2), program2, texture),
         };
 
 
@@ -233,7 +243,6 @@ public class Main {
         if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) // S
             result = result.minus(tmp);
 
-        var angle = acos(pointOfView.x) + (pointOfView.z > 0 ? 0 : Math.PI);
         // tmp = new Vec3(pointOfView.length() * (float) sin(angle), 0, -pointOfView.length() * (float) cos(angle)).normalize();
         tmp = pointOfView.normalize().cross(new Vec3(0, -1, 0));
         if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) // A
