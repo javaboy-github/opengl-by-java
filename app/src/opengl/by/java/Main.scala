@@ -75,8 +75,8 @@ object Main {
     GL.createCapabilities
 
     val boxes = Array(
-      new Box(new Vec3()(0, 0, 0)),
-      new Box(new Vec3()(4, 0, 0))
+      new Box(new Vec3(0, 0, 0)),
+      new Box(new Vec3(4, 0, 0))
     )
 
     // Create program
@@ -111,7 +111,7 @@ object Main {
       size(1) = heightPointer(0)
       glViewport(0, 0, widthPointer(0), heightPointer(0))
     }
-    glfwSetWindowSizeCallback(window, resize)
+    glfwSetWindowSizeCallback(window, (a1, a2, a3) => resize(a1, a2, a3))
     resize(window, size(0), size(1))
     glViewport(0, 0, size(0), size(1))
 
@@ -147,12 +147,12 @@ object Main {
       val pitch = angle(1)
       System.out.printf("%g %g\n", yaw, pitch)
       val pointOfView = new Vec3(cos(yaw).toFloat * Math.cos(pitch).toFloat, sin(pitch).toFloat, sin(yaw).toFloat * Math.cos(pitch).toFloat).normalize
-      if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) position = position.plus(pointOfView.scala(0.5f))
-      if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) position = position.minus(pointOfView.scala(0.5f))
-      if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) position = position.plus(new Nothing(pointOfView.y, pointOfView.x, 0).scala(0.5f))
-      if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) position = position.minus(new Nothing(pointOfView.y, pointOfView.x, 0).scala(0.5f))
-      if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) position = position.plus(up)
-      if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) position = position.minus(up)
+      if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) position = position - pointOfView * 0.5f
+      if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) position = position - pointOfView * 0.5f
+      if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) position = position + new Vec3(pointOfView.y, pointOfView.x, 0) * 0.5f
+      if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) position = position - new Vec3(pointOfView.y, pointOfView.x, 0) * 0.5f
+      if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) position = position + up
+      if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) position = position - up
       val width = size(0)
       val height = size(1)
       // var model = AffineTransformHelper.translate(0,  (t * t + 10) % 20 - 10, 0); // 単位行列
