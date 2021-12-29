@@ -23,7 +23,7 @@ import java.nio.IntBuffer
 
 object Main {
   var window: Long = 0
-  def main(args: Array[Float]) {
+  def main(args: Array[String]) {
     init()
     loop()
     terminate()
@@ -53,19 +53,17 @@ object Main {
           glfwSetWindowShouldClose(window, true)) // We will detect this in the rendering loop
 
     // Get the thread stack and push a new frame
+    val stack = stackPush
     try {
-      val stack = stackPush
-      try {
-        val pWidth = stack.mallocInt(1) // int*
-        val pHeight = stack.mallocInt(1)
-        // Get the window size passed to glfwCreateWindow
-        glfwGetWindowSize(window, pWidth, pHeight)
-        // Get the resolution of the primary monitor
-        val vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor)
-        // Center the window
-        glfwSetWindowPos(window, (vidmode.width - pWidth.get(0)) / 2, (vidmode.height - pHeight.get(0)) / 2)
-      } finally if (stack != null) stack.close()
-    }
+      val pWidth = stack.mallocInt(1) // int*
+      val pHeight = stack.mallocInt(1)
+      // Get the window size passed to glfwCreateWindow
+      glfwGetWindowSize(window, pWidth, pHeight)
+      // Get the resolution of the primary monitor
+      val vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor)
+      // Center the window
+      glfwSetWindowPos(window, (vidmode.width - pWidth.get(0)) / 2, (vidmode.height - pHeight.get(0)) / 2)
+    } finally if (stack != null) stack.close()
 
     glfwMakeContextCurrent(window)
     glfwSwapInterval(1)
@@ -119,7 +117,7 @@ object Main {
     val isFirst = Array(true)
     var cursorPos = Array(size(0).toDouble, size(1).toDouble)
     var offsetPos = Array(0.0, 0.0)
-    val angle = Array(0, 0)
+    val angle = Array(0.0, 0.0)
     if (glfwRawMouseMotionSupported) glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE)
     glfwSetCursorPosCallback(window, (_: Long, x: Double, y: Double) => {
       System.out.println(isFirst(0))
@@ -136,7 +134,7 @@ object Main {
 
 
     var position = new Vec3(3, 4, 5)
-    var t = 0
+    var t = 0.0
     val up = new Vec3(0, 1, 0)
 
     while ( {
@@ -145,7 +143,6 @@ object Main {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
       val yaw = angle(0)
       val pitch = angle(1)
-      System.out.printf("%g %g\n", yaw, pitch)
       val pointOfView = new Vec3(cos(yaw).toFloat * Math.cos(pitch).toFloat, sin(pitch).toFloat, sin(yaw).toFloat * Math.cos(pitch).toFloat).normalize
       if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) position = position - pointOfView * 0.5f
       if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) position = position - pointOfView * 0.5f
@@ -161,7 +158,7 @@ object Main {
                   */ val model = translate(0, 0, 0)
       val view = lookAt(position, // position
         pointOfView + position, // point of view
-        new Vec3(0, 1, 0) // up)
+        new Vec3(0, 1, 0)) // up)
       // var modelview = model.mul(view);
       val modelview = view * model
       // glUniformMatrix4fv(modelViewLoc, false, pointer);

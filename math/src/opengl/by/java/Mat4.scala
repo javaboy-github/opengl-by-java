@@ -2,6 +2,8 @@ package opengl.by.java
 
 class Mat4(val m:Array[Float]) {
     def +(target: Mat4) = new Mat4((m zip target.m).map(e => e._1 + e._2))
+    def -(target: Mat4) = this +target * -1
+    def *(target: Float) = new Mat4(m.map(e=>e*target))
     def *(target: Mat4) =
         new Mat4(Array(
             get(1,1) * target.get(1,1) + get(1,2) * target.get(2,1) + get(1,3) * target.get(3,1) + get(1,4) * target.get(4,1),
