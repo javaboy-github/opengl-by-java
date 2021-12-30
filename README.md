@@ -1,8 +1,8 @@
 # About
 1. OpenGLをしたい
-2. C++でやった:[javaboy-github/opengl-by-glfw](github.com/javaboy-github/opengl-by-glfw)
+2. C++でやった:[javaboy-github/opengl-by-glfw](https://github.com/javaboy-github/opengl-by-glfw)
 3. セグメンテーション違反！？低水準難しい...
-5. そうだ！最近し始めたRustでやってみよう:[javaboy-github/opengl-by-rust](github.com/javaboy-github/opengl-by-rust)
+5. そうだ！最近し始めたRustでやってみよう:[javaboy-github/opengl-by-rust](https://github.com/javaboy-github/opengl-by-rust)
 6. 使用人口が少なくて難しい...
 7. そうだ！一番得意なJavaでやろう(今ココ)
 
