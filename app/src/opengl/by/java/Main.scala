@@ -150,7 +150,7 @@ object Main {
         sin(pitch).toFloat,
         sin(yaw).toFloat * Math.cos(pitch).toFloat
       ).normalize
-      position = position + move pointOfView
+      position = position + move(pointOfView)
 
       val width = size(0)
       val height = size(1)
