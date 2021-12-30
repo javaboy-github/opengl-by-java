@@ -1,5 +1,4 @@
 plugins {
-	id 'java'
 }
 
 repositories {
@@ -11,7 +10,7 @@ dependencies {
 
 sourceSets {
 	main {
-		java {
+		scala {
 			srcDirs 'src'
 		}
 	}
