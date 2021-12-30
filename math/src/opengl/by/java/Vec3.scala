@@ -1,9 +1,11 @@
 package opengl.by.java
 
 class Vec3(val x: Float, val y: Float, val z: Float) {
+
     def +(target: Vec3) = new Vec3(x + target.x, y + target.y, z + target.z)
     def -(target: Vec3) = new Vec3(x - target.x, y - target.y, z - target.z)
-    def *(f: Float)  = new Vec3(x*f, y*f, z*f)
+    def *(f: Float) = new Vec3(x*f, y*f, z*f)
+    def /(f: Float) = new Vec3(x/f, y/f, z/f)
     def *(target: Vec3) =
         new Vec3(
             Math.fma(y, target.z, -z * target.y),
