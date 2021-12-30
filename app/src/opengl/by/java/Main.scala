@@ -72,19 +72,26 @@ object Main {
   def loop(): Unit = {
     GL.createCapabilities
 
-    val boxes = Array(
-      new Box(new Vec3(0, 0, 0)),
-      new Box(new Vec3(4, 0, 0))
-    )
-
-    // Create program
-    val program = Program.createFromSourcefile("src/main.vert", "src/main.frag")
-    val programId = program.program
+    val pogram = Program.createFromSourcefile("src/main.vert", "src/main.frag")
+    val programId = program.program;
     glBindAttribLocation(programId, 0, "position")
     glBindAttribLocation(programId, 1, "color")
     glBindFragDataLocation(programId, 0, "fragment")
     program.link()
-    program.use()
+
+    val texture = Texture.loadTexture("src/texture/png")
+
+    val program2 = Program.createFromSourcefile("src/main2.vert", "src/main2.frag")
+    program2.link()
+
+    val boxes = Array(
+      // new NormalBox(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
+      // new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
+      // new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
+      // new NormalBox(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
+      // new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
+      new TexturedBox(new Vec3(-4, 0, 0), new Vec3(2, 2, 2), program2, texture),
+    )
 
     val modelViewLoc = glGetUniformLocation(programId, "modelview")
     val projectionLoc = glGetUniformLocation(programId, "projection")
@@ -117,8 +124,9 @@ object Main {
     val isFirst = Array(true)
     var cursorPos = Array(size(0).toDouble, size(1).toDouble)
     var offsetPos = Array(0.0, 0.0)
-    val angle = Array(0.0, 0.0)
-    if (glfwRawMouseMotionSupported) glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE)
+    val angle = Array(100.0, -0.5)
+    if (glfwRawMouseMotionSupported)
+      glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE)
     glfwSetCursorPosCallback(window, (_: Long, x: Double, y: Double) => {
       System.out.println(isFirst(0))
       if (!isFirst(0)) {
@@ -135,30 +143,30 @@ object Main {
 
     var position = new Vec3(3, 4, 5)
     var t = 0.0
-    val up = new Vec3(0, 1, 0)
 
     while ( {
       !glfwWindowShouldClose(window)
     }) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
       val yaw = angle(0)
       val pitch = angle(1)
-      val pointOfView = new Vec3(cos(yaw).toFloat * Math.cos(pitch).toFloat, sin(pitch).toFloat, sin(yaw).toFloat * Math.cos(pitch).toFloat).normalize
-      if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) position = position - pointOfView * 0.5f
-      if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) position = position - pointOfView * 0.5f
-      if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) position = position + new Vec3(pointOfView.y, pointOfView.x, 0) * 0.5f
-      if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) position = position - new Vec3(pointOfView.y, pointOfView.x, 0) * 0.5f
-      if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) position = position + up
-      if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) position = position - up
+
+      val pointOfView = new Vec3(
+        cos(yaw).toFloat * Math.cos(pitch).toFloat,
+        sin(pitch).toFloat,
+        sin(yaw).toFloat * Math.cos(pitch).toFloat
+      ).normalize
+      position = position + move pointOfView
+
       val width = size(0)
       val height = size(1)
-      // var model = AffineTransformHelper.translate(0,  (t * t + 10) % 20 - 10, 0); // 単位行列
-      /*var model = AffineTransformHelper.rotateByYAxis(t)
-                      .mul(AffineTransformHelper.translate((float) Math.sin(t) * 3, 0, (float) Math.cos(t) * 3));
-                  */ val model = translate(0, 0, 0)
-      val view = lookAt(position, // position
+      val model = translate(0, 0, 0)
+      val view = lookAt(
+        position,               // position
         pointOfView + position, // point of view
-        new Vec3(0, 1, 0)) // up)
+        new Vec3(0, 1, 0)       // UP
+      )
       // var modelview = model.mul(view);
       val modelview = view * model
       // glUniformMatrix4fv(modelViewLoc, false, pointer);
@@ -166,16 +174,12 @@ object Main {
       val projection = frustum(1f, width.toFloat / height.toFloat, 0.1f, 100f)
       glUniformMatrix4fv(projectionLoc, true, projection.toArray)
       glUniform1f(tLoc, t.toFloat)
-      for (box <- boxes) {
-        box.draw()
-      }
+      boxes.foreach(box => box.draw())
       glfwSwapBuffers(window)
       glfwPollEvents()
       t += 0.1
     }
-    for (box <- boxes) {
-      box.close()
-    }
+    boxes.foreach(box => box.close())
   }
   def terminate() = {
     // 後始末
@@ -184,5 +188,39 @@ object Main {
 
     glfwTerminate()
     glfwSetErrorCallback(null).free()
+  }
+
+   private var isMoveBy3D = false
+
+  def move(pointOfView: Vec3): Vec3 = {
+    var result = new Vec3(0,0,0)
+    val speed = 0.5f
+    var tmp = pointOfView.normalize
+    if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) { // W
+      result = result + tmp
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) { // S
+      result = result - tmp
+    }
+    // tmp = new Vec3(pointOfView.length() * (float) sin(angle), 0, -pointOfView.length() * (float) cos(angle)).normalize();
+    tmp = pointOfView.normalize * new Vec3(0, -1, 0)
+    if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) { // A
+      result = result + tmp
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) { // D
+      result = result - tmp
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) { // SPACE
+      result = result + new Vec3(0, 1, 0)
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) { // SHIFT (LEFT)
+      result = result - new Vec3(0, 1, 0)
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { // Qキーによって見ている方向へ三次元空間的に動くか変える。ちょうどマイクラのクリエイティブのように
+      isMoveBy3D = !isMoveBy3D
+    }
+    if (!isMoveBy3D) result = new Vec3(result.x, 0, result.z)
+    if (result.len() != 0) result = result.normalize * speed
+    result
   }
 }

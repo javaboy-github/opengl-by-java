@@ -15,7 +15,7 @@ object Program {
     try vertexShaderSource = Files.readString(vertexShaderSourceFile)
     catch {
       case e: IOException =>
-        System.err.println("Failed to load " + vertexShaderSourceFilename)
+        System.err.println(s"Failed to load $vertexShaderSourceFilename")
         throw new RuntimeException(e)
     }
     val fragmentShaderSourceFile = Paths.get(fragmentShaderSourceFilename)
@@ -23,7 +23,7 @@ object Program {
     try fragmentShaderSource = Files.readString(fragmentShaderSourceFile)
     catch {
       case e: IOException =>
-        System.err.println("Failed to load " + fragmentShaderSourceFilename)
+        System.err.println(s"Failed to load $fragmentShaderSourceFilename")
         throw new RuntimeException(e)
     }
     new Program(vertexShaderSource, fragmentShaderSource)

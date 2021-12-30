@@ -5,7 +5,7 @@ plugins {
 }
 
 // LWJGL3用
-project.ext.lwjglVersion = "3.2.2"
+project.ext.lwjglVersion = "3.3.0"
 switch (OperatingSystem.current()) {
     case OperatingSystem.LINUX:
         project.ext.lwjglNatives = "natives-linux"
@@ -32,6 +32,8 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+
+    implementation 'org.l33tlabs.twl:pngdecoder:1.0'
 
 
     implementation project(':math')
