@@ -72,7 +72,7 @@ object Main {
     glBindFragDataLocation(programId, 0, "fragment")
     program.link()
 
-    val texture = Texture.loadTexture("src/texture/png")
+    val texture = Texture.loadTexture("src/texture.png")
 
     val program2 = Program.createFromSourcefile("src/main2.vert", "src/main2.frag")
     program2.link()
