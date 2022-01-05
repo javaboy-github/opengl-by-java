@@ -129,7 +129,7 @@ object AffineTransformHelper {
 			t.x, t.y, t.z, 0,
 			0, 0, 0, 1
 		))
-		rv - tv
+		rv * tv
 	}
 
 	/** 透視投影変換行列を作成する。
@@ -144,7 +144,7 @@ object AffineTransformHelper {
 		if (near == far) return new Mat4(Array(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)) // 単位行列
 		new Mat4(Array(
 			1 / tan(fovy / 2).toFloat / aspect, 0, 0, 0,
-			0, 1 / tan(fovy / 2).asInstanceOf[Float], 0, 0,
+			0, 1 / tan(fovy / 2).toFloat, 0, 0,
 			0, 0, -(far + near) / (far - near), -2 * far * near / (far - near),
 			0, 0, -1, 0
 		))

@@ -23,14 +23,15 @@ class NormalBox(val pos: Vec3, val boxSize: Vec3, val program: Program) extends 
   /** 頂点のインデックス数 */
   private val indexCount: Int = 36
   val s = boxSize / 2
-  private val vertex: Array[Float] = Array[Float](-s.x + pos.x, -s.y + pos.y, -s.z + pos.z, 0f, 0f, 0f, // (0)
-    -s.x + pos.x, -s.y + pos.y, s.z + pos.z, 0f, 0f, 0.8f, // (1)
-    -s.x + pos.x, s.y + pos.y, s.z + pos.z, 0f, 0.8f, 0f, // (2)
-    -s.x + pos.x, s.y + pos.y, -s.z + pos.z, 0f, 0.8f, 0.8f, // (3)
-    s.x + pos.x, s.y + pos.y, -s.z + pos.z, 0.8f, 0f, 0f, // (4)
-    s.x + pos.x, -s.y + pos.y, -s.z + pos.z, 0.8f, 0f, 0.8f, // (5)
-    s.x + pos.x, -s.y + pos.y, s.z + pos.z, 0.8f, 0.8f, 0f, // (6)
-    s.x + pos.x, s.y + pos.y, s.z + pos.z, 0.8f, 0.8f, 0.8f // (7
+  private val vertex: Array[Float] = Array[Float](
+    -s.x + pos.x, -s.y + pos.y, -s.z + pos.z, 0f,   0f,   0f,   // (0)
+    -s.x + pos.x, -s.y + pos.y,  s.z + pos.z, 0f,   0f,   0.8f, // (1)
+    -s.x + pos.x,  s.y + pos.y,  s.z + pos.z, 0f,   0.8f, 0f,   // (2)
+    -s.x + pos.x,  s.y + pos.y, -s.z + pos.z, 0f,   0.8f, 0.8f, // (3)
+     s.x + pos.x,  s.y + pos.y, -s.z + pos.z, 0.8f, 0f,   0f,   // (4)
+     s.x + pos.x, -s.y + pos.y, -s.z + pos.z, 0.8f, 0f,   0.8f, // (5)
+     s.x + pos.x, -s.y + pos.y,  s.z + pos.z, 0.8f, 0.8f, 0f,   // (6)
+     s.x + pos.x,  s.y + pos.y,  s.z + pos.z, 0.8f, 0.8f, 0.8f  // (7
   )
 
 

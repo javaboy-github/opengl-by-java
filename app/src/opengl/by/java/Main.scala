@@ -82,8 +82,8 @@ object Main {
       // new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
       // new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
       // new NormalBox(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
-      // new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
-      new TexturedBox(new Vec3(-4, 0, 0), new Vec3(2, 2, 2), program2, texture),
+       new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
+//      new TexturedBox(new Vec3(-4, 0, 0), new Vec3(2, 2, 2), program2, texture),
     )
 
     val modelViewLoc = glGetUniformLocation(programId, "modelview")
@@ -120,13 +120,13 @@ object Main {
     val angle = Array(100.0, -0.5)
     if (glfwRawMouseMotionSupported)
       glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE)
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED)
     glfwSetCursorPosCallback(window, (_: Long, x: Double, y: Double) => {
-      System.out.println(isFirst(0))
       if (!isFirst(0)) {
         offsetPos(0) = x - cursorPos(0)
         offsetPos(1) = y - cursorPos(1)
-        angle(0) += offsetPos(0) * 0.1
-        angle(1) += offsetPos(1) * 0.1
+        angle(0) += offsetPos(0) * 0.005
+        angle(1) += offsetPos(1) * 0.005
       }
       cursorPos(0) = x
       cursorPos(1) = y
@@ -150,7 +150,7 @@ object Main {
         sin(pitch).toFloat,
         sin(yaw).toFloat * Math.cos(pitch).toFloat
       ).normalize
-      position = position + move(pointOfView)
+      position += move(pointOfView)
 
       val width = size(0)
       val height = size(1)
@@ -183,37 +183,40 @@ object Main {
     glfwSetErrorCallback(null).free()
   }
 
-   private var isMoveBy3D = false
+   private var isMoveBy3D = true
 
   def move(pointOfView: Vec3): Vec3 = {
     var result = new Vec3(0,0,0)
     val speed = 0.5f
     var tmp = pointOfView.normalize
     if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) { // W
-      result = result + tmp
+      result += tmp
     }
     if (glfwGetKey(window, GLFW_KEY_S) != GLFW_RELEASE) { // S
-      result = result - tmp
+      result -= tmp
     }
     // tmp = new Vec3(pointOfView.length() * (float) sin(angle), 0, -pointOfView.length() * (float) cos(angle)).normalize();
     tmp = pointOfView.normalize * new Vec3(0, -1, 0)
     if (glfwGetKey(window, GLFW_KEY_A) != GLFW_RELEASE) { // A
-      result = result + tmp
+      result += tmp
     }
     if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) { // D
-      result = result - tmp
+      result -= tmp
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) { // SPACE
-      result = result + new Vec3(0, 1, 0)
+      result += new Vec3(0, 1, 0)
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) { // SHIFT (LEFT)
-      result = result - new Vec3(0, 1, 0)
+      result -= new Vec3(0, 1, 0)
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { // Qキーによって見ている方向へ三次元空間的に動くか変える。ちょうどマイクラのクリエイティブのように
       isMoveBy3D = !isMoveBy3D
     }
     if (!isMoveBy3D) result = new Vec3(result.x, 0, result.z)
-    if (result.len() != 0) result = result.normalize * speed
+    println(result)
+    if (result.len() != 0)
+      result = result.normalize * speed
+    println(result)
     result
   }
 }
