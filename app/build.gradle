@@ -11,7 +11,7 @@ switch (OperatingSystem.current()) {
         project.ext.lwjglNatives = "natives-linux"
         break
     case OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = "natives-macos"
+        project.ext.lwjglNatives = System.getProperty("os.arch") == "aarch64" ? "natives-macos-arm64" : "natives-macos"
         // macのみ、下記のフラグが必要
         applicationDefaultJvmArgs = ["-XstartOnFirstThread"]
         break
@@ -37,8 +37,6 @@ dependencies {
 
 
     implementation project(':math')
-    // 数学ライブラリ
-    implementation 'org.joml:joml:1.10.1'
 }
 
 sourceSets {
