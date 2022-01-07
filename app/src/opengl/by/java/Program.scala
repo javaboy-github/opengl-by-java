@@ -66,4 +66,29 @@ class Program(val vertex: String, val fragment: String) {
   def use(): Unit = {
     glUseProgram(program)
   }
+
+  def set(name: String, value: Boolean): Program = {
+    glUniform1i(glGetUniformLocation(program, name), if (value) 1 else 0);
+    return this;
+  }
+  def set(name: String, value: Int): Program= {
+    glUniform1i(glGetUniformLocation(program, name), value);
+    return this;
+  }
+  def set(name: String, value: Float): Program = {
+    glUniform1f(glGetUniformLocation(program, name), value);
+    return this;
+  }
+  def set(name: String, value: Vec3): Program = {
+    glUniform3fv(glGetUniformLocation(program, name), Array(value.x, value.y, value.z))
+    return this;
+  }
+  def set(name: String, value1: Vec3, value2: Float): Program = {
+    glUniform4fv(glGetUniformLocation(program, name), Array(value1.x, value1.y, value1.z, value2))
+    return this;
+  }
+  def set(name: String, value: Mat4): Program = {
+    glUniformMatrix4fv(glGetUniformLocation(program, name), true, value.toArray())
+    return this;
+  }
 }
