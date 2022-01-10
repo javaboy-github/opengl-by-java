@@ -16,7 +16,7 @@ object Texture {
     // PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(filename));
     val decoder = new PNGDecoder(new FileInputStream(Paths.get(filename).toFile))
     val buffer = ByteBuffer.allocateDirect(4 * decoder.getWidth * decoder.getHeight)
-    decoder.decode(buffer, decoder.getWidth * 4, PNGDecoder.Format.RGB)
+    decoder.decode(buffer, decoder.getWidth * 4, PNGDecoder.Format.RGBA)
     buffer.flip
     val id = glGenTextures
     glBindTexture(GL_TEXTURE_2D, id)

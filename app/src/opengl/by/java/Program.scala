@@ -68,6 +68,7 @@ class Program(val vertex: String, val fragment: String) {
 
   def getLoc(name: String): Int = {
     val location = glGetUniformLocation(program, name);
+    println(s"[program:$program]$name:$location")
 //    if (location == -1) throw new RuntimeException("The uniform not fount: " + name)
     return location;
   }
