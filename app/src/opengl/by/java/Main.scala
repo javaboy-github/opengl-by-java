@@ -70,25 +70,20 @@ object Main {
     glBindAttribLocation(programId, 0, "position")
     glBindAttribLocation(programId, 1, "color")
     glBindFragDataLocation(programId, 0, "fragment")
-    program.link()
 
     val texture = Texture.loadTexture("src/texture.png")
 
     val program2 = Program.createFromSourcefile("src/main2.vert", "src/main2.frag")
-    program2.link()
+    val programs  = Array(program, program2)
 
     val boxes = Array(
-      // new NormalBox(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
-      // new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
-      // new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
-      // new NormalBox(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
-       new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
-//      new TexturedBox(new Vec3(-4, 0, 0), new Vec3(2, 2, 2), program2, texture),
+//       new NormalBox(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
+//       new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
+//       new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
+//       new NormalBox(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
+//       new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
+      new TexturedBox(new Vec3(-4, 0, 0), new Vec3(2, 2, 2), program2, texture),
     )
-
-    val modelViewLoc = glGetUniformLocation(programId, "modelview")
-    val projectionLoc = glGetUniformLocation(programId, "projection")
-    val tLoc = glGetUniformLocation(programId, "t")
 
     glClearColor(1, 1, 1, 0)
     glEnable(GL_TEXTURE_2D) //テクスチャ表示
@@ -163,10 +158,12 @@ object Main {
       // var modelview = model.mul(view);
       val modelview = view * model
       // glUniformMatrix4fv(modelViewLoc, false, pointer);
-      glUniformMatrix4fv(modelViewLoc, true, modelview.toArray)
       val projection = frustum(1f, width.toFloat / height.toFloat, 0.1f, 100f)
-      glUniformMatrix4fv(projectionLoc, true, projection.toArray)
-      glUniform1f(tLoc, t.toFloat)
+      programs.foreach(program => {
+        program.use()
+          .set("modelview", modelview)
+          .set("projection", projection)
+      })
       boxes.foreach(box => box.draw())
       glfwSwapBuffers(window)
       glfwPollEvents()
@@ -213,10 +210,8 @@ object Main {
       isMoveBy3D = !isMoveBy3D
     }
     if (!isMoveBy3D) result = new Vec3(result.x, 0, result.z)
-    println(result)
     if (result.len() != 0)
       result = result.normalize * speed
-    println(result)
     result
   }
 }
