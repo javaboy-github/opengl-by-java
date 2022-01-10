@@ -1,7 +1,8 @@
 package opengl.by.java
 
 import org.lwjgl.opengl.GL11._
-import org.lwjgl.opengl.GL20._
+import org.lwjgl.opengl.GL20.{glGetUniformLocation, _}
+
 import java.nio.file.Paths
 import java.nio.file.Files
 import java.io.IOException
@@ -58,37 +59,42 @@ class Program(val vertex: String, val fragment: String) {
   }
   glAttachShader(program, fobj)
   glDeleteShader(fobj)
+  glLinkProgram(program)
 
-  def link(): Unit = {
-    glLinkProgram(program)
+  def use(): Program = {
+    glUseProgram(program)
+    return this;
   }
 
-  def use(): Unit = {
-    glUseProgram(program)
+  def getLoc(name: String): Int = {
+    println(name)
+    val location = glGetUniformLocation(program, name);
+    if (location == -1) throw new RuntimeException("The uniform not fount: " + name)
+    return location;
   }
 
   def set(name: String, value: Boolean): Program = {
-    glUniform1i(glGetUniformLocation(program, name), if (value) 1 else 0);
+    glUniform1i(getLoc(name), if (value) 1 else 0);
     return this;
   }
   def set(name: String, value: Int): Program= {
-    glUniform1i(glGetUniformLocation(program, name), value);
+    glUniform1i(getLoc(name), value);
     return this;
   }
   def set(name: String, value: Float): Program = {
-    glUniform1f(glGetUniformLocation(program, name), value);
+    glUniform1f(getLoc(name), value);
     return this;
   }
   def set(name: String, value: Vec3): Program = {
-    glUniform3fv(glGetUniformLocation(program, name), Array(value.x, value.y, value.z))
+    glUniform3fv(getLoc(name), Array(value.x, value.y, value.z))
     return this;
   }
   def set(name: String, value1: Vec3, value2: Float): Program = {
-    glUniform4fv(glGetUniformLocation(program, name), Array(value1.x, value1.y, value1.z, value2))
+    glUniform4fv(getLoc(name), Array(value1.x, value1.y, value1.z, value2))
     return this;
   }
   def set(name: String, value: Mat4): Program = {
-    glUniformMatrix4fv(glGetUniformLocation(program, name), true, value.toArray())
+    glUniformMatrix4fv(getLoc(name), true, value.toArray())
     return this;
   }
 }
