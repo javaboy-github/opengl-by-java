@@ -15,6 +15,7 @@ import java.lang.Math.sin
 import opengl.by.java.AffineTransformHelper._
 
 import java.util
+import scala.math.pow
 
 object Main {
   var window: Long = 0
@@ -40,8 +41,8 @@ object Main {
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE)
 
-    val width = 460
-    val height = 40
+    val width = 1260
+    val height = 960
     window = glfwCreateWindow(width, height, "OpenGL by java", NULL, NULL)
     if (window == NULL) throw new RuntimeException("GLFWウィンドウを作成できません")
 
@@ -82,9 +83,31 @@ object Main {
     val programs  = Array(program, program2)
 
     val boxes = new util.ArrayList[Box]()
-    for (i <- -20 until 20) {
-      for (j <- -20 until 20) {
-          boxes.add(new TexturedBox(new Vec3(i * 2, 0, j * 2), new Vec3(2, 2, 2), program2, texture))
+//    for (i <- -20 until 20) {
+//      for (j <- -20 until 20) {
+//          boxes.add(new TexturedBox(new Vec3(i * 2, 0, j * 2), new Vec3(2, 2, 2), program2, texture))
+//      }
+//    }
+    val complex = 2;
+    for (i<-0 until pow(3,complex).toInt) {
+      for (j<-0 until pow(3,complex).toInt) {
+        for (k<-0 until pow(3,complex).toInt) {
+          ((boxes:java.util.ArrayList[Box])=>{
+            var flag = true // returnの変わり
+            for (l<-0 until complex) {
+              if (
+                flag &&
+                  ((i/pow(3,l).toInt%3+1) *
+                   (j/pow(3,l).toInt%3+1) *
+                   (k/pow(3,l).toInt%3+1)) % 4 == 0
+              ) {
+                flag = false
+              }
+            }
+            if (flag)
+              boxes.add(new TexturedBox(new Vec3(i,j,k),new Vec3(1,1,1),program2,texture))
+          })(boxes)
+        }
       }
     }
 
@@ -130,7 +153,6 @@ object Main {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
       // 視線を算出
-      println(isActive)
       if (isActive) {
         val x = Array(0.0)
         val y = Array(0.0)
