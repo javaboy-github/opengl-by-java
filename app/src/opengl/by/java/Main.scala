@@ -14,15 +14,20 @@ import java.lang.Math.cos
 import java.lang.Math.sin
 import opengl.by.java.AffineTransformHelper._
 
+import java.util
+
 object Main {
   var window: Long = 0
-  def main(args: Array[String]) {
+  var isActive: Boolean = false;;
+  var isFirst: Boolean = true; // マウスでの操作で視線を変える操作で使用している
+
+  def main(args: Array[String]): Unit = {
     init()
     loop()
     terminate()
   }
 
-  def init() = {
+  def init(): Unit = {
     GLFWErrorCallback.createPrint(System.err).set()
     if (!glfwInit())
       throw new IllegalStateException("Cannot initialize GLFW")
@@ -35,15 +40,15 @@ object Main {
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE)
 
-    val width = 1260
-    val height = 960
+    val width = 460
+    val height = 40
     window = glfwCreateWindow(width, height, "OpenGL by java", NULL, NULL)
     if (window == NULL) throw new RuntimeException("GLFWウィンドウを作成できません")
 
-    glfwSetKeyCallback(window,
-      (window: Long, key: Int, _: Int, action: Int, _: Int) =>
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-          glfwSetWindowShouldClose(window, true)) // We will detect this in the rendering loop
+    glfwSetKeyCallback(window, (_, key, _, action, _) =>
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+          glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL)
+        }) // We will detect this in the rendering loop
 
     // Get the thread stack and push a new frame
     val stack = stackPush
@@ -76,20 +81,17 @@ object Main {
     val program2 = Program.createFromSourcefile("src/main2.vert", "src/main2.frag")
     val programs  = Array(program, program2)
 
-    val boxes = Array(
-//       new NormalBox(new Vec3(0, 0, 0), new Vec3(100, 0.1f, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // x
-//       new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 100, 0.1f), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // y
-//       new NormalBox(new Vec3(0, 0, 0), new Vec3(0.1f, 0.1f, 100), Program.createFromSourcefile("src/xyz.vert", "src/x.frag").link()), // z
-//       new NormalBox(new Vec3(0, 0, 0), new Vec3(2, 2, 2), program),
-//       new NormalBox(new Vec3(4, 0, 0), new Vec3(2, 2, 2), program),
-      new TexturedBox(new Vec3(-4, 0, 0), new Vec3(2, 2, 2), program2, texture),
-    )
+    val boxes = new util.ArrayList[Box]()
+    for (i <- -20 until 20) {
+      for (j <- -20 until 20) {
+          boxes.add(new TexturedBox(new Vec3(i * 2, 0, j * 2), new Vec3(2, 2, 2), program2, texture))
+      }
+    }
+
 
     glClearColor(1, 1, 1, 0)
     glEnable(GL_TEXTURE_2D) //テクスチャ表示
-
     glEnable(GL_DEPTH_TEST) // 重ならない
-
 
     // veiwport
     val size = Array[Int](1260, 770) // size[0] is width and size[1] is height
@@ -109,36 +111,38 @@ object Main {
     glViewport(0, 0, size(0), size(1))
 
 
-    val isFirst = Array(true)
-    var cursorPos = Array(size(0).toDouble, size(1).toDouble)
-    var offsetPos = Array(0.0, 0.0)
-    val angle = Array(100.0, -0.5)
+
     if (glfwRawMouseMotionSupported)
       glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE)
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED)
-    glfwSetCursorPosCallback(window, (_: Long, x: Double, y: Double) => {
-      if (!isFirst(0)) {
-        offsetPos(0) = x - cursorPos(0)
-        offsetPos(1) = y - cursorPos(1)
-        angle(0) += offsetPos(0) * 0.005
-        angle(1) += offsetPos(1) * 0.005
-      }
-      cursorPos(0) = x
-      cursorPos(1) = y
-      isFirst(0) = false
-    })
+
 
 
     var position = new Vec3(3, 4, 5)
     var t = 0.0
+    val lastCursorPos = Array(size(0).toDouble, size(1).toDouble)
+
+    var yaw = 0.0
+    var pitch = 0.0
 
     while ( {
       !glfwWindowShouldClose(window)
     }) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-      val yaw = angle(0)
-      val pitch = angle(1)
+      // 視線を算出
+      println(isActive)
+      if (isActive) {
+        val x = Array(0.0)
+        val y = Array(0.0)
+        glfwGetCursorPos(window, x, y);
+        if (!isFirst) {
+          yaw += (x(0) - lastCursorPos(0)) * 0.005
+          pitch += (y(0) - lastCursorPos(1)) * 0.005
+        }
+        lastCursorPos(0) = x(0)
+        lastCursorPos(1) = y(0)
+        isFirst = false
+      }
 
       val pointOfView = new Vec3(
         cos(yaw).toFloat * Math.cos(pitch).toFloat,
@@ -164,14 +168,27 @@ object Main {
           .set("modelview", modelview)
           .set("projection", projection)
       })
-      boxes.foreach(box => box.draw())
+      boxes.forEach(box => box.draw())
       glfwSwapBuffers(window)
       glfwPollEvents()
       t += 0.1
+      // isActiveに関する処理
+      if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS && isActive) {
+        // 有効
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL)
+        isActive = false
+        isFirst = true
+      }
+      if (!isActive && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        // 無効化
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED)
+        isActive = true
+      }
     }
-    boxes.foreach(box => box.close())
+    boxes.forEach(box => box.close())
+
   }
-  def terminate() = {
+  def terminate(): Unit = {
     // 後始末
     glfwFreeCallbacks(window)
     glfwDestroyWindow(window)
@@ -183,6 +200,7 @@ object Main {
    private var isMoveBy3D = true
 
   def move(pointOfView: Vec3): Vec3 = {
+    if (!isActive) return new Vec3(0,0,0)
     var result = new Vec3(0,0,0)
     val speed = 0.5f
     var tmp = pointOfView.normalize
