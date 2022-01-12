@@ -114,6 +114,7 @@ object Main {
 
 
     var position = new Vec3(3, 4, 5)
+    var up = new Vec3(0, 1, 0)
     var t = 0.0
     val lastCursorPos = Array(size(0).toDouble, size(1).toDouble)
 
@@ -131,8 +132,14 @@ object Main {
         val y = Array(0.0)
         glfwGetCursorPos(window, x, y);
         if (!isFirst) {
+          var lastPitch = pitch;
           yaw += (x(0) - lastCursorPos(0)) * 0.005
           pitch += (y(0) - lastCursorPos(1)) * 0.005
+          if (
+            lastPitch >= -Math.PI/2 && pitch < -Math.PI/2 ||
+            lastPitch <= Math.PI/2 && pitch > Math.PI/2
+          )
+            pitch =  lastPitch
         }
         lastCursorPos(0) = x(0)
         lastCursorPos(1) = y(0)
@@ -152,14 +159,14 @@ object Main {
       val view = lookAt(
         position,               // position
         pointOfView + position, // point of view
-        new Vec3(0, 1, 0)       // UP
+        up                      // UP
       )
       // var modelview = model.mul(view);
       val modelview = view * model
       // glUniformMatrix4fv(modelViewLoc, false, pointer);
       val projection = frustum(1f, width.toFloat / height.toFloat, 0.1f, 100f)
       boxes.foreach(box => {
-        val complex = 4;
+        val complex = 3;
         for (i<-0 until pow(3,complex).toInt) {
           for (j<-0 until pow(3,complex).toInt) {
             for (k<-0 until pow(3,complex).toInt) {
@@ -193,6 +200,9 @@ object Main {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL)
         isActive = false
         isFirst = true
+      }
+      if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        println(pitch)
       }
       if (!isActive && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         // 無効化
