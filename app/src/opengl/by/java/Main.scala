@@ -82,34 +82,7 @@ object Main {
     val program2 = Program.createFromSourcefile("src/main2.vert", "src/main2.frag")
     val programs  = Array(program, program2)
 
-    val boxes = new util.ArrayList[Box]()
-//    for (i <- -20 until 20) {
-//      for (j <- -20 until 20) {
-//          boxes.add(new TexturedBox(new Vec3(i * 2, 0, j * 2), new Vec3(2, 2, 2), program2, texture))
-//      }
-//    }
-    val complex = 2;
-    for (i<-0 until pow(3,complex).toInt) {
-      for (j<-0 until pow(3,complex).toInt) {
-        for (k<-0 until pow(3,complex).toInt) {
-          ((boxes:java.util.ArrayList[Box])=>{
-            var flag = true // returnの変わり
-            for (l<-0 until complex) {
-              if (
-                flag &&
-                  ((i/pow(3,l).toInt%3+1) *
-                   (j/pow(3,l).toInt%3+1) *
-                   (k/pow(3,l).toInt%3+1)) % 4 == 0
-              ) {
-                flag = false
-              }
-            }
-            if (flag)
-              boxes.add(new TexturedBox(new Vec3(i,j,k),new Vec3(1,1,1),program2,texture))
-          })(boxes)
-        }
-      }
-    }
+    val boxes = Array(new TexturedBox(new Vec3(0,0,0),new Vec3(1,1,1), program2, texture))
 
 
     glClearColor(1, 1, 1, 0)
@@ -185,12 +158,32 @@ object Main {
       val modelview = view * model
       // glUniformMatrix4fv(modelViewLoc, false, pointer);
       val projection = frustum(1f, width.toFloat / height.toFloat, 0.1f, 100f)
-      programs.foreach(program => {
-        program.use()
-          .set("modelview", modelview)
-          .set("projection", projection)
+      boxes.foreach(box => {
+        val complex = 4;
+        for (i<-0 until pow(3,complex).toInt) {
+          for (j<-0 until pow(3,complex).toInt) {
+            for (k<-0 until pow(3,complex).toInt) {
+              var flag = true // returnの変わり
+              for (l<-0 until complex) {
+                if (
+                  flag &&
+                    ((i/pow(3,l).toInt%3+1) *
+                      (j/pow(3,l).toInt%3+1) *
+                      (k/pow(3,l).toInt%3+1)) % 4 == 0
+                ) {
+                  flag = false
+                }
+              }
+              if (flag) {
+                box.program.use()
+                  .set("modelview", modelview*translate(i,j,k))
+                  .set("projection", projection)
+                box.draw()
+              }
+            }
+          }
+        }
       })
-      boxes.forEach(box => box.draw())
       glfwSwapBuffers(window)
       glfwPollEvents()
       t += 0.1
@@ -207,7 +200,7 @@ object Main {
         isActive = true
       }
     }
-    boxes.forEach(box => box.close())
+    boxes.foreach(box => box.close())
 
   }
   def terminate(): Unit = {
