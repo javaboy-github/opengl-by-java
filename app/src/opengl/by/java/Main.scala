@@ -14,7 +14,6 @@ import java.lang.Math.cos
 import java.lang.Math.sin
 import opengl.by.java.AffineTransformHelper._
 
-import java.util
 import scala.math.pow
 
 object Main {
@@ -82,7 +81,7 @@ object Main {
     val program2 = Program.createFromSourcefile("src/main2.vert", "src/main2.frag")
     val programs  = Array(program, program2)
 
-    val boxes = Array(new TexturedBox(new Vec3(0,0,0),new Vec3(1,1,1), program2, texture))
+    World += new TexturedBox(new Vec3(0,0,0),new Vec3(1,1,1), program2, texture)
 
 
     glClearColor(1, 1, 1, 0)
@@ -121,6 +120,8 @@ object Main {
     var yaw = 0.0
     var pitch = 0.0
 
+    var player = new PhysicalBox(position, new Vec3(1,2,1))
+
     while ( {
       !glfwWindowShouldClose(window)
     }) {
@@ -132,7 +133,7 @@ object Main {
         val y = Array(0.0)
         glfwGetCursorPos(window, x, y);
         if (!isFirst) {
-          var lastPitch = pitch;
+          val lastPitch = pitch;
           yaw += (x(0) - lastCursorPos(0)) * 0.005
           pitch += (y(0) - lastCursorPos(1)) * 0.005
           if (
@@ -164,33 +165,10 @@ object Main {
       // var modelview = model.mul(view);
       val modelview = view * model
       // glUniformMatrix4fv(modelViewLoc, false, pointer);
-      val projection = frustum(1f, width.toFloat / height.toFloat, 0.1f, 100f)
-      boxes.foreach(box => {
-        val complex = 3;
-        for (i<-0 until pow(3,complex).toInt) {
-          for (j<-0 until pow(3,complex).toInt) {
-            for (k<-0 until pow(3,complex).toInt) {
-              var flag = true // returnの変わり
-              for (l<-0 until complex) {
-                if (
-                  flag &&
-                    ((i/pow(3,l).toInt%3+1) *
-                      (j/pow(3,l).toInt%3+1) *
-                      (k/pow(3,l).toInt%3+1)) % 4 == 0
-                ) {
-                  flag = false
-                }
-              }
-              if (flag) {
-                box.program.use()
-                  .set("modelview", modelview*translate(i,j,k))
-                  .set("projection", projection)
-                box.draw()
-              }
-            }
-          }
-        }
-      })
+      box.program.use()
+        .set("modelview", modelview*translate(i,j,k))
+        .set("projection", projection)
+      box.draw()
       glfwSwapBuffers(window)
       glfwPollEvents()
       t += 0.1
