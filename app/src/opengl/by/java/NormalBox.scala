@@ -18,7 +18,7 @@ object NormalBox {
   )
 }
 
-class NormalBox(val pos: Vec3, val boxSize: Vec3, override var program: Program) extends Box {
+class NormalBox(var pos: Vec3, val boxSize: Vec3, override var program: Program) extends Box {
   val size: Int = 3
   /** 頂点のインデックス数 */
   private val indexCount: Int = 36

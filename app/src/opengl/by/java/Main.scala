@@ -112,7 +112,6 @@ object Main {
 
 
 
-    var position = new Vec3(3, 4, 5)
     var up = new Vec3(0, 1, 0)
     var t = 0.0
     val lastCursorPos = Array(size(0).toDouble, size(1).toDouble)
@@ -120,7 +119,7 @@ object Main {
     var yaw = 0.0
     var pitch = 0.0
 
-    var player = new PhysicalBox(position, new Vec3(1,2,1))
+    var player = new PhysicalBox(new Vec3(0, 4, 0), new Vec3(1,2,1))
 
     while ( {
       !glfwWindowShouldClose(window)
@@ -152,23 +151,28 @@ object Main {
         sin(pitch).toFloat,
         sin(yaw).toFloat * Math.cos(pitch).toFloat
       ).normalize
-      position += move(pointOfView)
+      val lastPos = player.start;
+      player.start += move(pointOfView)
+      if (!World.isCollision(player)) player.start = lastPos;
 
       val width = size(0)
       val height = size(1)
       val model = translate(0, 0, 0)
       val view = lookAt(
-        position,               // position
-        pointOfView + position, // point of view
+        player.start + new Vec3(0.5f, 0.5f, 0.5f),               // position
+        pointOfView + player.start + new Vec3(0.5f, 0.5f, 0.5f), // point of view
         up                      // UP
       )
       // var modelview = model.mul(view);
       val modelview = view * model
+      val projection = frustum(1f, width.toFloat / height.toFloat, 0.1f, 100f)
       // glUniformMatrix4fv(modelViewLoc, false, pointer);
-      box.program.use()
-        .set("modelview", modelview*translate(i,j,k))
-        .set("projection", projection)
-      box.draw()
+      World.forEach(box => {
+        box.program.use()
+          .set("modelview", modelview)
+          .set("projection", projection)
+        box.draw()
+      })
       glfwSwapBuffers(window)
       glfwPollEvents()
       t += 0.1
@@ -188,7 +192,8 @@ object Main {
         isActive = true
       }
     }
-    boxes.foreach(box => box.close())
+    World.forEach(box => box.close())
+    World.clear()
 
   }
   def terminate(): Unit = {

@@ -21,7 +21,7 @@ object TexturedBox {
   )
 }
 
-class TexturedBox(val pos: Vec3, val boxSize: Vec3,
+class TexturedBox(var pos: Vec3, val boxSize: Vec3,
                   /** シェーダープログラム */
                   var program: Program, var textures: Array[Texture]) extends Box {
   /** 頂点のインデックス数 */
