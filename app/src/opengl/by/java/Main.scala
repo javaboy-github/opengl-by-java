@@ -14,12 +14,14 @@ import java.lang.Math.cos
 import java.lang.Math.sin
 import opengl.by.java.AffineTransformHelper._
 
+import scala.language.postfixOps
 import scala.math.pow
 
 object Main {
   var window: Long = 0
   var isActive: Boolean = false;;
   var isFirst: Boolean = true; // マウスでの操作で視線を変える操作で使用している
+  var downAndUp = 0.5;
 
   def main(args: Array[String]): Unit = {
     init()
@@ -81,7 +83,18 @@ object Main {
     val program2 = Program.createFromSourcefile("src/main2.vert", "src/main2.frag")
     val programs  = Array(program, program2)
 
-    World += new TexturedBox(new Vec3(0,0,0),new Vec3(1,1,1), program2, texture)
+    val seed = 202201191849L
+    val random = new scala.util.Random(seed)
+
+    val generateWorld = (x:Int,z:Int) => {
+      x + z
+    }
+
+
+    for (x <- -100 until 100) {
+      for (z <- -10 until  10)
+      World += new TexturedBox(new Vec3(x,generateWorld(x,z),z),new Vec3(1,1,1), program2, texture)
+    }
 
 
     glClearColor(1, 1, 1, 0)
@@ -105,21 +118,17 @@ object Main {
     resize(window, size(0), size(1))
     glViewport(0, 0, size(0), size(1))
 
-
-
     if (glfwRawMouseMotionSupported)
       glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE)
 
-
-
-    var up = new Vec3(0, 1, 0)
     var t = 0.0
     val lastCursorPos = Array(size(0).toDouble, size(1).toDouble)
 
+    val up = new Vec3(0,1,0)
     var yaw = 0.0
     var pitch = 0.0
 
-    var player = new PhysicalBox(new Vec3(0, 4, 0), new Vec3(1,2,1))
+    val player = new PhysicalBox(new Vec3(0, 4, 0), new Vec3(1,2,1))
 
     while ( {
       !glfwWindowShouldClose(window)
@@ -151,21 +160,29 @@ object Main {
         sin(pitch).toFloat,
         sin(yaw).toFloat * Math.cos(pitch).toFloat
       ).normalize
-      val lastPos = player.start;
+      var lastPos = player.start;
       player.start += move(pointOfView)
-      if (!World.isCollision(player)) player.start = lastPos;
+      if (World.isCollision(player)) {player.start = lastPos}
+      lastPos = player.start;
+      if (isJumping) {
+        player.start -= new Vec3(0, downAndUp.toFloat, 0) // 落 下
+        if (World.isCollision(player)) {
+          player.start = lastPos
+          canJump = true;
+        };
+      }
 
       val width = size(0)
       val height = size(1)
       val model = translate(0, 0, 0)
       val view = lookAt(
-        player.start + new Vec3(0.5f, 0.5f, 0.5f),               // position
+        player.start + new Vec3(0.5f, 0.2f, 0.5f),               // position
         pointOfView + player.start + new Vec3(0.5f, 0.5f, 0.5f), // point of view
         up                      // UP
       )
       // var modelview = model.mul(view);
       val modelview = view * model
-      val projection = frustum(1f, width.toFloat / height.toFloat, 0.1f, 100f)
+      val projection = frustum(1f, width.toFloat / height.toFloat, 0.01f, 100f)
       // glUniformMatrix4fv(modelViewLoc, false, pointer);
       World.forEach(box => {
         box.program.use()
@@ -206,11 +223,15 @@ object Main {
   }
 
    private var isMoveBy3D = true
+  private var jump: Double = 0;
+  private var isJumping: Boolean = false;
+  private var jumpSpeed= 0.0;
+  private var canJump = true;
 
   def move(pointOfView: Vec3): Vec3 = {
     if (!isActive) return new Vec3(0,0,0)
     var result = new Vec3(0,0,0)
-    val speed = 0.5f
+    val speed = 0.4f
     var tmp = pointOfView.normalize
     if (glfwGetKey(window, GLFW_KEY_W) != GLFW_RELEASE) { // W
       result += tmp
@@ -226,16 +247,16 @@ object Main {
     if (glfwGetKey(window, GLFW_KEY_D) != GLFW_RELEASE) { // D
       result -= tmp
     }
+    result = new Vec3(result.x, 0, result.z)
     if (glfwGetKey(window, GLFW_KEY_SPACE) != GLFW_RELEASE) { // SPACE
-      result += new Vec3(0, 1, 0)
+      if (canJump) {jump = 0;isJumping = true;canJump=false;jumpSpeed = 0}
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) != GLFW_RELEASE) { // SHIFT (LEFT)
-      result -= new Vec3(0, 1, 0)
+    if (jump > 1) isJumping = false;
+    if (isJumping) {
+      jumpSpeed += 0.1;
+      result += new Vec3(0, jumpSpeed.toFloat , 0)
+      jump += jumpSpeed
     }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { // Qキーによって見ている方向へ三次元空間的に動くか変える。ちょうどマイクラのクリエイティブのように
-      isMoveBy3D = !isMoveBy3D
-    }
-    if (!isMoveBy3D) result = new Vec3(result.x, 0, result.z)
     if (result.len() != 0)
       result = result.normalize * speed
     result

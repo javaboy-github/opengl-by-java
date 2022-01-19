@@ -14,7 +14,13 @@ object World {
   }
 
   def isCollision(physicalBox: PhysicalBox): Boolean = {
-    chunks(physicalBox.start.x.toInt / 16)(physicalBox.start.z.toInt / 16).isCollision(physicalBox)
+    val func = (x: Int,y: Int) => {
+      chunks.getOrElseUpdate(x, mutable.Map[Int, Chunk]()).getOrElseUpdate(y,new Chunk(x,y)).isCollision(physicalBox)
+    }
+    func(physicalBox.start.x.toInt / 16,physicalBox.start.z.toInt / 16) ||
+    func(physicalBox.start.x.toInt / 16-1,physicalBox.start.z.toInt / 16) ||
+    func(physicalBox.start.x.toInt / 16,physicalBox.start.z.toInt / 16-1) ||
+    func(physicalBox.start.x.toInt / 16-1,physicalBox.start.z.toInt / 16-1)
   }
 
   def forEach(callback: Box =>Unit): Unit = chunks.foreach(chunks => chunks._2.foreach(chunk => chunk._2.boxes.foreach(callback)))
