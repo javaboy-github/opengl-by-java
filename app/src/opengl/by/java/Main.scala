@@ -21,7 +21,7 @@ object Main {
   var window: Long = 0
   var isActive: Boolean = false;;
   var isFirst: Boolean = true; // マウスでの操作で視線を変える操作で使用している
-  var downAndUp = 0.5;
+  var downAndUp = 0.35
 
   def main(args: Array[String]): Unit = {
     init()
@@ -164,7 +164,7 @@ object Main {
       player.start += move(pointOfView)
       if (World.isCollision(player)) {player.start = lastPos}
       lastPos = player.start;
-      if (isJumping) {
+      if (!isJumping) {
         player.start -= new Vec3(0, downAndUp.toFloat, 0) // 落 下
         if (World.isCollision(player)) {
           player.start = lastPos
